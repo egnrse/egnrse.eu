@@ -1,0 +1,102 @@
+<!-- tests the available bridges by trying to get a small file over them -->
+<!DOCTYPE html>
+<HTML lang="en">
+<HEAD>
+	<meta charset="UTF-8">
+	<TITLE>Test Bridges</TITLE>
+	<style>
+		.hidden {
+			display: none;
+		}
+		th, td {
+			padding-right: 15px;
+		}
+	</style>
+</HEAD>
+<script>
+		let oldDomain = "egnrse.eu";
+		//list of domain-links {local, ipv6, zerotier, serveo, localtunnel, ngrok}
+		const newLocalDomain = {"192.168.0.196":0, "[2a02:8388:7004:1600:fb9b:ccb8:c9e1:9717]":0, "192.168.196.204":0, "egnrse.serveo.net":0, "egnrse.loca.lt":0, "unbiased-fairly-jennet.ngrok-free.app":0};
+		
+		// @brief tests if domain is reachable, by loading a small image
+		function online(domain) {
+			newLocalDomain[domain] = 1;
+			console.log(domain+' online');
+			let element = document.getElementById(domain);
+			element.innerHTML = "online";
+			element.style.color = "green";
+		}
+		function offline(domain) {
+			newLocalDomain[domain] = 0;
+			console.log(domain+' offline');
+			let element = document.getElementById(domain);
+			element.innerHTML = "offline";
+			element.style.color = "red";
+			
+			//change notes on some domains
+			if(domain == "unbiased-fairly-jennet.ngrok-free.app") {
+				let element = document.getElementById("unbiased-fairly-jennet.ngrok-free.app_notes");
+				element.innerHTML = "might still be online";
+			}
+			if(domain == "egnrse.loca.lt") {
+				let element = document.getElementById("egnrse.loca.lt_notes");
+				element.innerHTML = "might still be online. Password: 84.115.219.14";
+			}
+		}
+		
+		function onLoad() {
+			//load images to test if bridges are up
+			let testDiv = document.getElementById("onlineTestDiv");
+			testDiv.innerHTML = 
+				"<img src=\"https://192.168.0.196/testImage.bmp\"  onload=\"online('192.168.0.196')\" onerror=\"offline('192.168.0.196')\" class=\"hidden\">" +
+				//"<img src=\"https://[2a02:8388:7004:1600:fb9b:ccb8:c9e1:9717]/testImage.bmp\"  onload=\"online('[2a02:8388:7004:1600:fb9b:ccb8:c9e1:9717]')\" onerror=\"offline('[2a02:8388:7004:1600:fb9b:ccb8:c9e1:9717]')\" class=\"hidden\">" +
+				"<img src=\"https://192.168.196.204/testImage.bmp\"  onload=\"online('192.168.196.204')\" onerror=\"offline('192.168.196.204')\" class=\"hidden\">" +
+				"<img src=\"https://egnrse.serveo.net/testImage.bmp\"  onload=\"online('egnrse.serveo.net')\" onerror=\"offline('egnrse.serveo.net')\" class=\"hidden\">" +
+				"<img src=\"https://egnrse.loca.lt/testImage.bmp\"  onload=\"online('egnrse.loca.lt')\" onerror=\"offline('egnrse.loca.lt')\" class=\"hidden\">" +
+				"<img src=\"https://unbiased-fairly-jennet.ngrok-free.app/testImage.bmp\"  onload=\"online('unbiased-fairly-jennet.ngrok-free.app')\" onerror=\"offline('unbiased-fairly-jennet.ngrok-free.app')\" class=\"hidden\">" +
+				"";	
+		}
+	</script>
+<BODY onload="onLoad()">
+	<H1>Testing bridges to egnrse.eu</H1>
+	
+	<table>
+		<tr> <th>Link to Bridge</th>														<th>Status</th>													<th></th> </tr>
+		<tr> <td><a href="https://unbiased-fairly-jennet.ngrok-free.app">ngrok</a></td>		<td id="unbiased-fairly-jennet.ngrok-free.app">unkown</td>		<td id="unbiased-fairly-jennet.ngrok-free.app_notes"></td> </tr>
+		<tr> <td><a href="https://egnrse.loca.lt">localtunnel</a></td>						<td id="egnrse.loca.lt">unkown</td>								<td id="egnrse.loca.lt_notes">Password: 84.115.219.14</td> </tr>
+		<tr> <td><a href="https://egnrse.serveo.net">serveo</a></td>						<td id="egnrse.serveo.net">unkown</td>							<td></td> </tr>
+		<tr> <td><a href="https://192.168.196.204">zerotier</a></td>						<td id="192.168.196.204">unkown</td>							<td></td> </tr>
+		<tr> <td><a href="https://192.168.0.196">local network</a></td>						<td id="192.168.0.196">unkown</td>								<td></td> </tr>
+		<!-- <tr> <td><a href="https://[2a02:8388:7004:1600:fb9b:ccb8:c9e1:9717]">IPv6</a></td>	<td id="[2a02:8388:7004:1600:fb9b:ccb8:c9e1:9717]">unkown</td> </tr> -->
+	</table>
+	
+	<div id="onlineTestDiv"> </div>
+	
+	<br>
+	To check wich bridges work, you can trust the javascript, go to the console (F12), or check manually over the links above.<br>
+	
+	<P>
+	<HR>
+	<ADDRESS>
+		Web Server
+	</ADDRESS>
+</BODY>
+</HTML>
+
+<!--
+   - Unfortunately, Microsoft has added a clever new
+   - "feature" to Internet Explorer. If the text of
+   - an error's message is "too small", specifically
+   - less than 512 bytes, Internet Explorer returns
+   - its own error message. You can turn that off,
+   - but it's pretty tricky to find switch called
+   - "smart error messages". That means, of course,
+   - that short error messages are censored by default.
+   - IIS always returns error messages that are long
+   - enough to make Internet Explorer happy. The
+   - workaround is pretty simple: pad the error
+   - message with a big comment like this to push it
+   - over the five hundred and twelve bytes minimum.
+   - Of course, that's exactly what you're reading
+   - right now.
+   -->

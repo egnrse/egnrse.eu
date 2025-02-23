@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Welcome to egnrse.eu</title>
+		<link rel="stylesheet" href="styles.css">
+	</head>
+	<body>
+		<h1 id="h1" style="color:#C893DC;">Success! The egnrse virtual host is working! You are here...nice! What now?</h1>
+
+		<div class="buttons">
+		<button onclick="location.href = 'games';" id="gamesButton" class="float-left submit-button">Games</button>
+		<button onclick="switchMode()" id="modeButton" class="float-left submit-button">Switch Mode</button>
+		</div>
+
+		<div class="sliderContainer">
+			<div>
+				<input type="range" id="range" min="10" max="400" step="5" value="120" hidden>
+				</div>
+				<div>
+				<input type="range" id="speed" min="0" max="10" step="0.05" value="1">
+			</div>
+		</div>
+		<canvas id="bgCanvas"></canvas>
+		<script src="bgAnimation.js"></script>
+	</body>
+</html>

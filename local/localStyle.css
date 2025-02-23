@@ -1,0 +1,21 @@
+html, body {
+	color: #FCD4F6;
+	background: #350F3F;
+	background: #0A060E;
+	line-height: 1.4;
+	margin: 40px auto;
+	max-width: 650px;
+	font-size: 18px;
+	padding: 0 10px;
+}
+h1, h2, h3, h4, h5, h6 {
+	margin: 10px 0;
+	padding: 0;
+}
+a {
+	color: #35C1E7;
+}
+.flag {
+	height: 1.7rem;
+	border-radius: 0.25rem;
+}

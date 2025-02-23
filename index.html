@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="fediverse:creator" content="@egnrse@mastodon.social">
+	<link rel="me" href="https://mastodon.social/@egnrse">
+	<title>Redirecting...</title>
+	<style>
+		.hidden {
+			display: none;
+		}
+		th, td {
+			padding-right: 15px;
+		}
+	</style>
+</head>
+<script>
+// for now we only need the local directory
+  window.location.href = "./local";
+</script>
+<body onload="onLoad()">
+	<h1>Redirecting</h1>
+
+	<p id="p1">If you are not redirected automatically, try one of the links bellow.</p>
+	
+	<table>
+		<tr> <th>Link to Bridge</th>														<th>Status</th>													<th></th> </tr>
+		<tr> <td><a href="https://unbiased-fairly-jennet.ngrok-free.app">ngrok</a></td>		<td id="unbiased-fairly-jennet.ngrok-free.app">unkown</td>		<td id="unbiased-fairly-jennet.ngrok-free.app_notes"></td> </tr>
+		<tr> <td><a href="https://egnrse.loca.lt">localtunnel</a></td>						<td id="egnrse.loca.lt">unkown</td>								<td id="egnrse.loca.lt_notes">Password: 84.115.211.201</td> </tr>
+		<tr> <td><a href="https://egnrse.serveo.net">serveo</a></td>						<td id="egnrse.serveo.net">unkown</td>							<td></td> </tr>
+		<tr> <td><a href="https://192.168.196.204">zerotier</a></td>						<td id="192.168.196.204">unkown</td>							<td></td> </tr>
+		<tr> <td><a href="https://192.168.0.196">local network</a></td>						<td id="192.168.0.196">unkown</td>								<td></td> </tr>
+		<!-- <tr> <td><a href="https://[2a02:8388:7004:1600:fb9b:ccb8:c9e1:9717]">IPv6</a></td>	<td id="[2a02:8388:7004:1600:fb9b:ccb8:c9e1:9717]">unkown</td> </tr> -->
+	</table>
+	
+	<div id="onlineTestDiv"> </div>
+	
+	<p><a href="https://www.egnrse.eu/local"><button type="button">or try an older version locally</button></a></p>
+	
+	<script>
+		let oldDomain = "egnrse.eu";
+		const newLocalDomain = {};	//list of local domain-links	"192.168.0.196":0, "192.168.196.204":0
+		let countLocal = 2;	//length of newLocalDomain
+		
+		// @brief tests if domain is reachable, by loading a small image
+		function online(domain) {
+			newLocalDomain[domain] = 1;
+			console.log(domain+' online');
+			
+			let element = document.getElementById(domain);
+			element.innerHTML = "online";
+			element.style.color = "green";
+			
+			let currentURL = window.location.href;
+			let newURL = currentURL.replace(oldDomain, domain);
+			window.location.replace(newURL);
+			console.log(newURL);
+		}
+		function offline(domain) {
+			newLocalDomain[domain] = 0;
+			console.log(domain+' offline');
+			
+			let element = document.getElementById(domain);
+			element.innerHTML = "offline?";
+			element.style.color = "red";
+			
+			if(domain == "unbiased-fairly-jennet.ngrok-free.app") {
+				let element = document.getElementById("unbiased-fairly-jennet.ngrok-free.app_notes");
+				element.innerHTML = "might still be online";
+			}
+			if(domain == "egnrse.loca.lt") {
+				let element = document.getElementById("egnrse.loca.lt_notes");
+				element.innerHTML = "might still be online. Password: 84.115.222.26";
+			}
+		}
+		
+		function onLoad() {
+			//load images to test if bridges are up
+			let testDiv = document.getElementById("onlineTestDiv");
+			testDiv.innerHTML = 
+				"<img src=\"https://192.168.0.196/testImage.bmp\"  onload=\"online('192.168.0.196')\" onerror=\"offline('192.168.0.196')\" class=\"hidden\">" +
+				//"<img src=\"https://[2a02:8388:7004:1600:fb9b:ccb8:c9e1:9717]/testImage.bmp\"  onload=\"online('[2a02:8388:7004:1600:fb9b:ccb8:c9e1:9717]')\" onerror=\"offline('[2a02:8388:7004:1600:fb9b:ccb8:c9e1:9717]')\" class=\"hidden\">" +
+				"<img src=\"https://192.168.196.204/testImage.bmp\"  onload=\"online('192.168.196.204')\" onerror=\"offline('192.168.196.204')\" class=\"hidden\">" +
+				"<img src=\"https://egnrse.serveo.net/testImage.bmp\"  onload=\"online('egnrse.serveo.net')\" onerror=\"offline('egnrse.serveo.net')\" class=\"hidden\">" +
+				"<img src=\"https://egnrse.loca.lt/testImage.bmp\"  onload=\"online('egnrse.loca.lt')\" onerror=\"offline('egnrse.loca.lt')\" class=\"hidden\">" +
+				"<img src=\"https://unbiased-fairly-jennet.ngrok-free.app/testImage.bmp\"  onload=\"online('unbiased-fairly-jennet.ngrok-free.app')\" onerror=\"offline('unbiased-fairly-jennet.ngrok-free.app')\" class=\"hidden\">" +
+				"";	
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+body, html {
+	margin: 0;
+	padding: 0;
+	overflow: hidden;	/* Hide scrollbars */
+	background-color: #401552;
+}
+canvas {
+	display: block;
+	border: 1px solid black;
+}

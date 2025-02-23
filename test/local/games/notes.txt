@@ -1,0 +1,25 @@
+learn requestAnimationFrame()
+
+# folders:
+- scripts
+- assets
+	- audio
+	- images
+- css
+index.html
+
+use a general game library (my own)?
+
+# class structure
+- game (general rendering)
+	- player (movement)
+	- environment (stuff to interact)
+	- atmosphere (music, bg)
+	- ui (buttons, settings)
+	- animation
+
+make collision a library function
+
+animations:
+	multiple on one object
+	different animations
