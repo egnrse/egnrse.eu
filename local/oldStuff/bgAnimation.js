@@ -165,7 +165,7 @@ const rangeSlider = document.getElementById("range");
 const h1 = document.getElementById("h1");
 
 document.addEventListener("mousemove", mouseMove);
-document.addEventListener("input", () => {speed = speedSlider.value < 4 ? speedSlider.value : speedSlider.value**2-12 ;})
+document.addEventListener("input", () => {speed = speedSlider.value < 2 ? speedSlider.value : 2+(speedSlider.value-2)**3;})
 document.addEventListener("input", () => {mode2Threshold = rangeSlider.value;})
 document.addEventListener("keydown", () => {if(event.key === "ArrowUp") {objects.push(new Particle())}})
 document.addEventListener("keydown", () => {if(event.key === "ArrowDown") {objects.pop()}})
