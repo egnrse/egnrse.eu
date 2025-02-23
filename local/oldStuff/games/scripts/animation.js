@@ -1,5 +1,5 @@
 /**
- * @file player.js
+ * @file animation.js
  * @author Elia Nitsche
  * @date 01.03.2024
  * @brief animation object to store and manage animations
