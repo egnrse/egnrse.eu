@@ -14,10 +14,27 @@
 		display: block;
 		border: 1px solid black;
 	}
+	button {
+		background-color:#008010;
+		color:white;
+		font-size:20px;
+		padding: 15px 32px;
+		border-radius: 4px;"
+	}
+	.hint {
+		transform: rotate(90deg) translateX(50%);
+		position: absolute;
+		top: 50%;
+		right: 0;
+		transform-origin: top right;
+}
 </style>
 </head>
 <body>
 <canvas id="myCanvas" width="400" height="400"></canvas>
+<button onclick="location.href = '../';" id="gamesButton" class="float-left submit-button">BACK</button>
+<p class="hint">mouseClick</p>
+
 
 <script>
 	// Get the canvas element
