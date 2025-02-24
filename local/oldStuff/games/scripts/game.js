@@ -21,6 +21,11 @@ export default class Game {
 	animation;			//list of all object names running an animation
 	preTime;			//time of previous this.update() call
 	
+	// helper vars for space+movement interactions
+	spaceJustDown = false;	// if space just got pressed (resets on 'space' keyUp event)
+	prevSpaceEvent;			// the previous event that pressing space triggered (either 'draw' or 'delete')
+	moveDraw = false;		// if we are in a moving draw (space down while moving)
+	
 	constructor() {
 		//console.log("new Game");
 		// get the canvas element
@@ -30,6 +35,7 @@ export default class Game {
 		// setup event handlers
 		window.addEventListener("resize", this.setCanvasSize.bind(this));
 		window.addEventListener("keydown", this.keyDownEvent.bind(this));
+		window.addEventListener("keyup", this.keyUpEvent.bind(this));
 
 		this.init();
 	}
@@ -48,6 +54,9 @@ export default class Game {
 		this.environment.push(new Environment(g.Point2D(this.blockSize,this.blockSize), g.Point2D(this.blockSize,this.blockSize)));
 		this.animation = [];
 		this.preTime = 0;
+
+		this.spaceJustDown = false
+		this.moveDraw = false
 	}
 
 	/**
@@ -111,7 +120,6 @@ export default class Game {
 	draw(ctx=this.ctx) {
 		this.ctx.clearRect(0,0, this.canvas.width, this.canvas.height)
 		
-		//this.player.draw(ctx);
 		for(let i=0; i<this.environment.length;i++) {
 			this.environment[i].draw(ctx);
 		}
@@ -165,7 +173,7 @@ export default class Game {
 		//delete all finished animations
 		for(let i=finished.length-1;i>=0;i--) {
 			this.animation.splice(finished[i],1);
-			console.log("animation '"+ finished[i] +"' done");
+			//console.log("animation '"+ finished[i] +"' done");
 		}
 		//draw everything
 		this.draw();
@@ -211,6 +219,53 @@ export default class Game {
 		}
 	}
 
+	/**
+	 * @brief test if an object in environment is on position given by point 
+	 * @param g.Point2D point: the point to search at
+	 * @returns the index in environment if found, else -1
+	 */
+	envExist(point) {
+		for(let i=0;i<this.environment.length;i++) {
+			if(g.equals(this.environment[i].pos, point) == true) {
+				//console.log("found")
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 * @brief draw or delete a square at point with size
+	 * 		depending different factors (eg. environment, prevSpaceEvent, moveDraw)
+	 * 		(also animates the player)
+	 * @param g.Point2D point: where to draw/delete
+	 * @param g.Point2D size: how big to draw/delete
+	 */
+	interactEnv(point=this.player.pos, size=this.player.size) {
+		//console.log(this.moveDraw+", "+this.prevSpaceEvent);
+		let empty = true;	// if the current position is empty (and should be drawn on)
+		let indexFound = this.envExist(point)
+		if(indexFound >= 0) {
+			if(!this.moveDraw || this.prevSpaceEvent == "delete") {
+				//console.log("deleting")
+				this.prevSpaceEvent = "delete";
+				this.environment.splice(indexFound,1);
+			}
+			empty = false;
+		}
+		if(empty) {
+			if(!this.moveDraw || this.prevSpaceEvent == "draw") {
+				//console.log("drawing")
+				this.prevSpaceEvent = "draw";
+				this.environment.push(new Environment({...point}, {...size}));
+			}
+		}
+		if(!this.moveDraw) {
+			this.addAnimation("player", "BounceSize", "xy", "1.8", 0.1);
+		}
+	}
+
+
 	/// HANDLERS ///////
 	
 	/**
@@ -232,11 +287,30 @@ export default class Game {
 		if(typeof this.player !== "undefined") this.draw(this.ctx);
 	}
 
+
 	/**
-	 * @handles key down events
+	 * @brief handles key up events
+	 */
+	keyUpEvent(event) {
+		let key = event.keyCode;
+		//console.log(key+" up")
+
+		switch(this.gameState) {
+			case 0:
+				if(key == 32) {		//space 
+					this.spaceJustDown = false;
+					this.moveDraw = false;
+				}
+		}
+
+	}
+
+	/**
+	 * @brief handles key down events
 	 */
 	keyDownEvent(event) {
 		let key = event.keyCode;
+		//console.log(key+" down");
 
 		switch(this.gameState) {
 			case 0:
@@ -244,27 +318,36 @@ export default class Game {
 				if(key >= 37 && key <= 40 || key == 65 || key == 68 || key == 83 || key == 87) {
 					this.player.step(key);
 					this.addAnimation("player", "BounceSize", "xy", "0.3", 0.2);
+					if(this.spaceJustDown) {
+						this.moveDraw = true;
+						this.interactEnv(this.player.pos, this.player.size);
+					}
+					else {
+						this.moveDraw = false;
+					}
 				}
 				if(key == 32) {		//space : draw/delete
-					let empty = true;
-					for(let i=0;i<this.environment.length;i++) {
-						if(g.equals(this.environment[i].pos, this.player.pos) == true) {
-							//console.log("found");
-							this.environment.splice(i,1);
-							empty = false;
-							break;
-						}
+					//console.log("SPACE")
+					if(!this.spaceJustDown) {	// dont react if space just got pressed
+						this.spaceJustDown = true;
+
+						//draw or delete
+						this.interactEnv(this.player.pos, this.player.size);
 					}
-					if(empty) {
-						this.environment.push(new Environment({...this.player.pos}, {...this.player.size}));
+					else {	// if space is already longer down
+						//console.log("already down")
 					}
-					this.addAnimation("player", "BounceSize", "xy", "1.8", 0.1);
 				}
 				if(this.animation.length < 1) {
 					requestAnimationFrame(this.update.bind(this));
 				}
 				break;
-		}
-		//console.log(key);
-	}
+		} // switch
+	} // keyDownEvent
 }
+							
+
+/* 
+ * Just some maybe useful stuff for later
+ * throw new Warning("Game.keyDownEvent: invalid 'this.prevSpaceEvent' (prevSpaceEvent:'"+this.prevSpaceEvent+"')");
+ */

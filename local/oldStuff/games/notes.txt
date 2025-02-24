@@ -23,3 +23,6 @@ make collision a library function
 animations:
 	multiple on one object
 	different animations
+
+ideas:
+	drawRec expanding on delete/inward on draw (with the environment color)
