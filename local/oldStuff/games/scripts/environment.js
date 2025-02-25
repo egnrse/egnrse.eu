@@ -93,6 +93,6 @@ export default class Environment {
 		return this.size.y*this.anim.sizeMulti.y + this.anim.sizeAdd.y;
 	}
 	get getColor() {
-		return g.getHexColor(this.color);
+		return g.getRGBAColor(this.color, this.anim.colorA);
 	}
 }

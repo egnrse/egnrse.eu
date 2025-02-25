@@ -67,9 +67,9 @@ class GameLibrary {
 	/**
 	 * @brief converts color names/spaces to rgba(r,g,b,a)
 	 */
-	static getRGBAColor(str) {
-		let hex = getHexColor(str);
-		return hexToRgbA(hex);
+	static getRGBAColor(str, a=1) {
+		let hex = this.getHexColor(str);
+		return this.hexToRgbA(hex, a);
 	}
 
 	/**

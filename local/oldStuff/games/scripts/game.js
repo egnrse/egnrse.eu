@@ -278,6 +278,7 @@ export default class Game {
 				animTry.solid = false;
 				this.animDrawList.push(animTry);
 				this.addAnimation(animTry, "AppearSize", "xy");
+				this.addAnimation(animTry, "FadeOut");
 				
 				//console.log("deleting")
 				this.prevSpaceEvent = "delete";

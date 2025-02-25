@@ -18,6 +18,7 @@ export default class Animation {
 	sizeAdd;
 	sizeMulti;
 	color;
+	colorA;
 
 	/** whatAnimation, arguments for the Animation */
 	constructor(what="", args="", args2="", args3="") {
@@ -40,6 +41,7 @@ export default class Animation {
 		this.sizeAdd = g.Point2D();
 		this.sizeMulti = g.Point2D(1,1);
 		this.color = "#000000";
+		this.colorA = 1;
 	}
 
 	/**
@@ -81,6 +83,7 @@ export default class Animation {
 			this.sizeAdd.y += this.anim[i].sizeAdd.y;
 			this.sizeMulti.x *= this.anim[i].sizeMulti.x;
 			this.sizeMulti.y *= this.anim[i].sizeMulti.y;
+			this.colorA *= this.anim[i].colorA;
 
 			if(val == true) {			//animation done
 				finished.push(i);
@@ -350,7 +353,7 @@ class Wait extends Animation {
  * @brief appear animation (negative intensity reverses the direction)
  * @param axis  : the axis in which to bounce
  * @param args2 : intensity
- * @param speed : how fast to bounce
+ * @param speed : how fast
  */
 class AppearSize extends Animation {
 	axis;
@@ -382,7 +385,7 @@ class AppearSize extends Animation {
 		}
 		
 		//calculate curve
-		this.change = g.LinearInterpolate(this.preChange, 1.6, this.time*this.speed);//g.CosineInterpolate(0, 5, this.time*this.speed);
+		this.change = g.LinearInterpolate(this.preChange, 1, this.time*this.speed);//g.CosineInterpolate(0, 5, this.time*this.speed);
 
 		this.preChange = this.change;
 		
@@ -402,7 +405,49 @@ class AppearSize extends Animation {
 		else console.log("Animation.AppearSize.update: bad direction");
 
 		//console.log(this.time + ": "+ this.change);
-		if(this.change > 1.5) return true;
+		if(this.change > 0.7) return true;
+		else return false;
+	}
+}
+/**
+ * @brief fade out animation (negative intensity reverses the direction)
+ * @param speed : how fast
+ */
+class FadeOut extends Animation {
+	speed;
+	change;
+	preChange;
+	begin;		//saves time at a state switch
+
+	constructor(speed=1) {
+		super();
+		if(speed == "") speed = 0.1;
+		this.speed = speed/1200*5;
+		this.change = 0.5;
+		this.preChange = this.change;
+		this.begin = 0;
+	}
+
+	update(delta) {
+		//console.log("\t AppearSize");
+		this.time += delta;
+		//first delta might be way to big
+		if(this.started) {
+			this.time = delta = 20;
+			this.started = false;
+		}
+		
+		//calculate curve
+		this.change = g.LinearInterpolate(this.preChange, 0, this.time*this.speed);
+
+		this.preChange = this.change;
+		
+
+		//write back
+		this.colorA = this.change;
+
+		//console.log(this.time + ": "+ this.change);
+		if(this.change <= 0) return true;
 		else return false;
 	}
 }
