@@ -52,21 +52,24 @@ class GameLibrary {
 	/**
 	 * @brief converts hex colors #rrggbb to rgba(r,g,b,a)
 	 */
-	static hexToRgbA(hex, a=1){
-		let c;
-		//if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex))
-		try {
-			c= hex.substring(1).split('');
-			if(c.length== 3){
-				c= [c[0], c[0], c[1], c[1], c[2], c[2]];
-			}
-			c= '0x'+c.join('');
-			let val = 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+a+')';
-			c = null;
-			return val;
+	static hexToRgbA(hex, a = 1) {
+		// saver but slower
+		//if (!/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
+		//	throw new Error('GameLibrary.hexToRgbA: Bad Hex');
+		//}
+		let r, g, b;
+		if (hex.length === 4) { // 3-digit hex (e.g., #abc)
+			r = parseInt(hex[1] + hex[1], 16);
+			g = parseInt(hex[2] + hex[2], 16);
+			b = parseInt(hex[3] + hex[3], 16);
+		} else { // 6-digit hex (e.g., #aabbcc)
+			r = parseInt(hex.substring(1, 3), 16);
+			g = parseInt(hex.substring(3, 5), 16);
+			b = parseInt(hex.substring(5, 7), 16);
 		}
-		catch {	throw new Error('GameLibrary.hexToRrbA: Bad Hex'); }
+		return `rgba(${r},${g},${b},${a})`;
 	}
+
 	/**
 	 * @brief converts color names/spaces to rgba(r,g,b,a)
 	 */
