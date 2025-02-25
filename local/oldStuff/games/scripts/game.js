@@ -16,6 +16,7 @@ export default class Game {
 	gameState;			// -1: init, 0: new Game
 	player;
 	environment;		//a list of objects
+	animDrawList;		//a list of animation objects that need rendering (disappear after being finished)
 	
 	blockSize = 40;		//size of a block in the game
 	animation;			//list of all object names running an animation
@@ -52,6 +53,7 @@ export default class Game {
 		this.player = new Player(g.Point2D(2*this.blockSize,2*this.blockSize), g.Point2D(this.blockSize, this.blockSize));
 		this.environment = [];
 		this.environment.push(new Environment(g.Point2D(this.blockSize,this.blockSize), g.Point2D(this.blockSize,this.blockSize)));
+		this.animDrawList = [];
 		this.animation = [];
 		this.preTime = 0;
 
@@ -60,21 +62,24 @@ export default class Game {
 	}
 
 	/**
-	 * @brief starts the game
+	 * @brief starts the game (and draws the first frame)
 	 */
 	run() {
 		this.gameState = 0;
-		this.draw();
+
 		
+
 		//this.addAnimation("player", "Move", "u", 50);
 		//this.addAnimation(1, "Nothing");
+
+		this.draw();
 	}
 
 	
 	/**
 	 * @brief add a new animation object
-	 * @param who to animate, assumes environment[who] if who is a number
-	 * @param what animation
+	 * @param who to animate, assumes environment[who] if who is a number (number, obj, or "player")
+	 * @param what animation (name of the animation class)
 	 * @param args,args2,args3 parameters for the animation
 	 * 	args (direction,axis), args2 (string, distance), args3 (speed)
 	 */
@@ -86,12 +91,15 @@ export default class Game {
 
 		//catch/throw 'who' not found errors
 		try {
-			//sort between player and environment
+			//sort between environment, playerand other
 			if(typeof who === 'number') {	//environment animations
 				this.environment[who].anim.addAnimation(what, args, args2, args3);
 			}
-			else {	//player animation
+			else if(who == "player"){	//player animation
 				this[who].anim.addAnimation(what, args, args2, args3);
+			}
+			else {	///other animation
+				who.anim.addAnimation(what, args, args2, args3);
 			}
 		}
 		catch(err) {
@@ -123,6 +131,9 @@ export default class Game {
 		for(let i=0; i<this.environment.length;i++) {
 			this.environment[i].draw(ctx);
 		}
+		for(let i=0; i<this.animDrawList.length;i++) {
+			this.animDrawList[i].draw(ctx);
+		}
 
 		this.player.draw(ctx);		//draw player last to be in top
 	}
@@ -152,31 +163,42 @@ export default class Game {
 				if(this.environment[this.animation[i]].update(delta) == false) {
 					//console.log("not done");
 				}
-				else {
-					//done
-					finished.push(i);
-				}
+				else { finished.push(i); }
 
 			}
-			else {		//player animations
+			else if(this.animation[i] == "player"){		//player animations
 				//update the animation and tests if its done
 				if(this[this.animation[i]].update(delta) == false) {
 					//console.log("not done");
 				}
-				else {
-					//done
-					finished.push(i);
-				}
+				else { finished.push(i); }
 			}
+			else {		//other animations
+				//update the animation and tests if its done
+				if(this.animation[i].update(delta) == false) {
+					//console.log("not done");
+				}
+				else { finished.push(i); }
+			}
+
 		}
 		
-		//delete all finished animations
-		for(let i=finished.length-1;i>=0;i--) {
-			this.animation.splice(finished[i],1);
-			//console.log("animation '"+ finished[i] +"' done");
-		}
 		//draw everything
 		this.draw();
+
+		//delete all finished animations
+		for(let i=finished.length-1;i>=0;i--) {
+			//console.log("animation '"+ i +"' done");
+			// remove from animDrawList (if exists)
+			for(let j=0;j<this.animDrawList.length;j++) {
+				//console.log(this.animDrawList[j])
+				if(this.animation[i] == this.animDrawList[j]) {
+					//console.log("found match in animDrawList");
+					this.animDrawList.splice(j,1);
+				}
+			}
+			this.animation.splice(i,1);
+		}
 
 		//if animations are not done yet, get another frame
 		if(this.animation.length > 0) {
@@ -246,7 +268,17 @@ export default class Game {
 		let empty = true;	// if the current position is empty (and should be drawn on)
 		let indexFound = this.envExist(point)
 		if(indexFound >= 0) {
-			if(!this.moveDraw || this.prevSpaceEvent == "delete") {
+			if(!this.moveDraw || this.prevSpaceEvent == "delete") {	
+				// animation
+				let animTry = new Environment(g.Point2D(), g.Point2D(1,1), undefined, "blue", "strokeRect");
+				animTry.lineWidth = 2;
+				animTry.color = this.environment[indexFound].getColor;
+				animTry.pos = this.environment[indexFound].getPos;
+				animTry.size = this.environment[indexFound].getSize;
+				animTry.solid = false;
+				this.animDrawList.push(animTry);
+				this.addAnimation(animTry, "AppearSize", "xy");
+				
 				//console.log("deleting")
 				this.prevSpaceEvent = "delete";
 				this.environment.splice(indexFound,1);

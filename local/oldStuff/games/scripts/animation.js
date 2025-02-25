@@ -239,10 +239,10 @@ class BounceBack extends Animation {
 	}
 }
 /**
- * @brief bounces in size (animated objet seems to be stable)
- * @param axis the axis in witch to bounce
+ * @brief bounces in size (animated object seems to be stable)
+ * @param axis 	: the axis in witch to bounce
  * @param args2 : intensity,
- * @param speed how fast to bounce
+ * @param speed : how fast to bounce
  */
 class BounceSize extends Animation {
 	axis;
@@ -343,6 +343,66 @@ class Wait extends Animation {
 		//console.log("\tWait");
 		this.time += delta;
 		if(this.time >= this.args) return true;
+		else return false;
+	}
+}
+/**
+ * @brief appear animation (negative intensity reverses the direction)
+ * @param axis  : the axis in which to bounce
+ * @param args2 : intensity
+ * @param speed : how fast to bounce
+ */
+class AppearSize extends Animation {
+	axis;
+	intensity;
+	speed;
+	change;
+	preChange;
+	begin;		//saves time at a state switch
+
+	constructor(axis, args2="1", speed=1) {
+		super();
+		this.axis = axis;
+		if(args2 ==  "") args2 = "1";
+		this.intensity = args2;
+		if(speed == "") speed = 0.1;
+		this.speed = speed/1200;
+		this.change = -0.2;
+		this.preChange = this.change;
+		this.begin = 0;
+	}
+
+	update(delta) {
+		//console.log("\t AppearSize");
+		this.time += delta;
+		//first delta might be way to big
+		if(this.started) {
+			this.time = delta = 20;
+			this.started = false;
+		}
+		
+		//calculate curve
+		this.change = g.LinearInterpolate(this.preChange, 1.6, this.time*this.speed);//g.CosineInterpolate(0, 5, this.time*this.speed);
+
+		this.preChange = this.change;
+		
+
+		//write back
+		if(this.axis == "x") {
+			this.sizeMulti.x = 1 + this.change*this.intensity;
+		}
+		else if(this.axis == "y") {
+			this.sizeMulti.y = 1 + this.change*this.intensity;
+
+		}
+		else if(this.axis == "xy" || this.axis == "yx") {
+			this.sizeMulti.x = 1 + this.change*this.intensity;
+			this.sizeMulti.y = 1 + this.change*this.intensity;
+		}
+		else console.log("Animation.AppearSize.update: bad direction");
+
+		//console.log(this.time + ": "+ this.change);
+		if(this.change > 1.5) return true;
 		else return false;
 	}
 }

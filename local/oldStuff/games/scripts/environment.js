@@ -12,7 +12,8 @@ export default class Environment {
 	size;
 	velocity;	//todo
 	color;
-	shape;		//todo
+	shape;		// a draw method of ctx (eg. fillRect, strokeRect)
+	lineWidth;  
 	
 	solid;		//hitbox?//todo
 	hidden;		//todo
@@ -21,6 +22,7 @@ export default class Environment {
 
 
 	/** @param position, size, velocity, color, shape, solid, hidden*/
+	//constructor(pos=g.Point2D(), size=g.Point2D(2,2), vel=g.Point2D(), color="red", shape="fillRect", solid=true, hidden=false) {
 	constructor(pos=g.Point2D(), size=g.Point2D(2,2), vel=g.Point2D(), color="red", shape="fillRect", solid=true, hidden=false) {
 		//console.log("create env");
 		this.pos = pos; 
@@ -29,6 +31,7 @@ export default class Environment {
 		this.velocity = vel;
 		this.color = color;
 		this.shape = shape;
+		this.lineWidth = 3;
 
 		this.solid = solid;
 		this.hidden = hidden;
@@ -44,7 +47,10 @@ export default class Environment {
 		if(!this.hidden) {
 			ctx.beginPath();
 			ctx.fillStyle = this.getColor;
+			ctx.strokeStyle = this.getColor;
+			ctx.lineWidth = this.lineWidth;
 			ctx[this.shape](this.getX, this.getY, this.getWidth, this.getHeight);
+			//console.log("x:"+this.getX+", y:"+this.getY+", w:"+this.getWidth+", h:"+this.getHeight);
 			ctx.fill();
 		}
 	}
@@ -72,10 +78,10 @@ export default class Environment {
 		return g.Point2D(this.getX, this.getY);
 	}
 	get getX() {
-		return this.pos.x + this.anim.pos.x;
+		return this.pos.x + this.anim.pos.x - (this.size.x*(this.anim.sizeMulti.x-1)/2); // also compensate for multiplication offset
 	}
 	get getY() {
-		return this.pos.y + this.anim.pos.y;
+		return this.pos.y + this.anim.pos.y - (this.size.y*(this.anim.sizeMulti.y-1)/2);
 	}
 	get getSize() {
 		return g.Point2D(this.getWidth, this.getHeight);
