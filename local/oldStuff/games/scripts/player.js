@@ -84,6 +84,7 @@ export default class Player {
 		if(val == true) {
 			//console.log(this.anim.update(delta));
 			//animation is done
+			this.anim = null;
 			this.anim = new Animation();
 			return true;
 		}

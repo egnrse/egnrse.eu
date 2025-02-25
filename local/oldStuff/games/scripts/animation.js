@@ -90,8 +90,10 @@ export default class Animation {
 			}
 		}
 		for(let i=finished.length-1;i>=0;i--) {
+			this.anim[finished[i]] = null;
 			this.anim.splice(finished[i],1);
 		}
+		finished = null;
 		if(this.anim.length < 1) {		//all animations done
 			return true;
 		}

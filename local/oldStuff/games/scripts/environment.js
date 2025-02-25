@@ -64,6 +64,7 @@ export default class Environment {
 		let val = this.anim.update(delta);
 		if(val == true) {
 			//animation is done
+			this.anim = null;
 			this.anim = new Animation();
 			return true;
 		}
