@@ -93,6 +93,7 @@ export default class Environment {
 		return this.size.y*this.anim.sizeMulti.y + this.anim.sizeAdd.y;
 	}
 	get getColor() {
-		return g.getRGBAColor(this.color, this.anim.colorA);
+		if(this.anim.length < 1) return this.color;
+		else return g.getRGBAColor(this.color, this.anim.colorA);
 	}
 }
