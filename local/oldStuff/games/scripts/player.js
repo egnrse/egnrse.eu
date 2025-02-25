@@ -98,10 +98,10 @@ export default class Player {
 		return g.Point2D(this.getX, this.getY);
 	}
 	get getX() {
-		return this.pos.x + this.anim.pos.x;
+		return this.pos.x + this.anim.pos.x - (this.size.x*(this.anim.sizeMulti.x-1)/2); // also compensate for multiplication offset
 	}
 	get getY() {
-		return this.pos.y + this.anim.pos.y;
+		return this.pos.y + this.anim.pos.y - (this.size.y*(this.anim.sizeMulti.y-1)/2);
 	}
 	get getSize() {
 		return g.Point2D(this.getWidth, this.getHeight);
