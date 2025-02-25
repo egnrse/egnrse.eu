@@ -68,7 +68,6 @@ export default class Game {
 		this.gameState = 0;
 
 		
-
 		//this.addAnimation("player", "Move", "u", 50);
 		//this.addAnimation(1, "Nothing");
 
@@ -183,22 +182,22 @@ export default class Game {
 
 		}
 		
-		//draw everything
-		this.draw();
-
 		//delete all finished animations
 		for(let i=finished.length-1;i>=0;i--) {
 			//console.log("animation '"+ i +"' done");
 			// remove from animDrawList (if exists)
 			for(let j=0;j<this.animDrawList.length;j++) {
-				//console.log(this.animDrawList[j])
 				if(this.animation[i] == this.animDrawList[j]) {
-					//console.log("found match in animDrawList");
+					this.animDrawList[j] = null;
 					this.animDrawList.splice(j,1);
 				}
 			}
+			this.animation[i] = null;
 			this.animation.splice(i,1);
 		}
+
+		//draw everything
+		this.draw();
 
 		//if animations are not done yet, get another frame
 		if(this.animation.length > 0) {
@@ -282,6 +281,7 @@ export default class Game {
 				
 				//console.log("deleting")
 				this.prevSpaceEvent = "delete";
+				this.environment[indexFound] = null;
 				this.environment.splice(indexFound,1);
 			}
 			empty = false;

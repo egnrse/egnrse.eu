@@ -53,16 +53,19 @@ class GameLibrary {
 	 * @brief converts hex colors #rrggbb to rgba(r,g,b,a)
 	 */
 	static hexToRgbA(hex, a=1){
-		var c;
-		if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+		let c;
+		//if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex))
+		try {
 			c= hex.substring(1).split('');
 			if(c.length== 3){
 				c= [c[0], c[0], c[1], c[1], c[2], c[2]];
 			}
 			c= '0x'+c.join('');
-			return 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+a+')';
+			let val = 'rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+','+a+')';
+			c = null;
+			return val;
 		}
-		throw new Error('GameLibrary.hexToRrbA: Bad Hex');
+		catch {	throw new Error('GameLibrary.hexToRrbA: Bad Hex'); }
 	}
 	/**
 	 * @brief converts color names/spaces to rgba(r,g,b,a)
