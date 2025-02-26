@@ -24,7 +24,6 @@ let rect = {	//player
 		color: "blue"
 		};
 let obstacles;
-let obstCount;
 let obstSpeed = 0.03;
 
 let DIFFICULTIES = [0.5,0.4,0.35,0.3,0.26];
@@ -48,7 +47,6 @@ function init() {
 	rect.py = canvasStats.height - rect.sy*3;
 
 	obstacles = [];
-	obstCount = 0;
 	obstacles.push(createObst(0.75));
 	for(let i=0; i<5; i++){
 		obstacles.push(createObst());
@@ -66,7 +64,8 @@ function createObst(hForce=-1) {
 	else height=canvasStats.height;
 	if(hForce > 0) h = height*hForce;
 	else h = Math.random()*(height-w);
-	let x = obstInitDist + obstDistance*obstCount;
+	let x = obstInitDist;
+	if(obstacles.length > 0) x = obstacles.at(-1).px+obstDistance;
 
 	obst = {
 		px: x, py: h,	//position xy
@@ -74,7 +73,6 @@ function createObst(hForce=-1) {
 		counted: false,			//for the score
 		color: "red"
 	};
-	obstCount++;
 	return obst;
 }
 
@@ -165,14 +163,15 @@ function tick() {
 					// create new element / clean up old ones
 					obstacles.push(createObst());
 					if(score > 2) {
+						obstacles[0] = null;
 						obstacles.shift();	//remove first element
 					}
 				}
 				if(rect.py < obst.py || (rect.py+rect.sy) > obst.py+obst.sy) {
 					//collide
-					console.log(obst);
 					running = false;
 					restart = true;
+					//console.log(obst);
 				}
 			}		
 		
