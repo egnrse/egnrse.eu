@@ -47,19 +47,25 @@
 <body>
 <canvas id="myCanvas" width="400" height="400"></canvas>
 <button onclick="location.href = '../';" id="gamesButton" class="float-left submit-button">BACK</button>
-<p class="hint">mouseClick</p>
+<p class="hint">mouseClick - wrap around
+</p>
 
 <div class="rightTop">
 <label>Score:</label>
 <label id="scoreLabel">0</label> <br>
 <label>Diff:</label>
-<select id="difficultySelect">
+<select id="difficultySelect" style="width: 47px">
 	<option value="0">0</option>
 	<option value="1">1</option>
 	<option value="2" selected>2</option>
 	<option value="3">3</option>
 	<option value="4">4</option>
-</select>
+</select> <br>
+<label>FPS:</label>
+<input type="number" value="60" min="10" step="10" id="fpsBox" style="width: 40px"/> <br>
+<label>Max:</label>
+<label id="maxScoreLabel">0</label> <br>
+
 </div>
 <script>
 	// @brief load external js
@@ -69,6 +75,11 @@
 		document.body.appendChild(element);
 	}
 	loadScripts();
+
+	// only allow numbers
+	document.getElementById("fpsBox").addEventListener("input", function(event) {
+        this.value = this.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+    });
 </script>
 </body>
 </html>

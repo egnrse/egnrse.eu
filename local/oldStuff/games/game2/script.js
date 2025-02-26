@@ -14,11 +14,21 @@ const canvasStats = {width: canvas.width/sizeConst, height: canvas.height/sizeCo
 	size: sizeConst};
 let diffBox = document.getElementById("difficultySelect");
 let scoreLabel = document.getElementById("scoreLabel");
+let maxScoreLabel = document.getElementById("maxScoreLabel");
+let fpsBox = document.getElementById("fpsBox");
+let maxFPS;		// 5-inf
+
+//dev
+let notGOD = true;
 
 // variables
 let running = false;	// if the game is running
+let start = false;
 let score = -1;
-let restart = false;		// when the game is over
+let maxScore = -1;
+let restart = false;	// when the game is over
+let preTime;
+
 let rect = {	//player
 		px: 0.4, py: 0.7,	//position xy
 		vx: 0, vy: -(0.03),	//speed xy
@@ -28,7 +38,10 @@ let rect = {	//player
 let obstacles;
 let obstSpeed = 0.03;
 
-let DIFFICULTIES = [0.5,0.4,0.35,0.3,0.26];
+//difficulty
+let DIFFICULTIES = [0.5,0.4,0.35,0.3,0.24];	//gap
+let distDIFF = [1,0.9,0.8,0.8,0.8];			//obstacle distance
+let speedDIFF = [0.85,0.95,1,1.1,1.3];		//speed multiplier
 let dif = 2;	//0-4
 
 
@@ -37,9 +50,12 @@ function init() {
 	running = false;
 	score = 0;
 	restart = false;
+	preTime = undefined;
 
 	dif = diffBox.value;
-	scoreLabel.textContent = score;
+	maxFPS = fpsBox.value.replace(/[^0-9]/g, '');
+	if(maxFPS < 5) maxFPS = 5;
+	scoreLabel.textContent = writeScore(score);
 
 	//player
 	rect = {
@@ -62,15 +78,19 @@ function init() {
 // @brief create an obstacle
 function createObst(hForce=-1) {
 	let obstInitDist = 0.7*canvasStats.width;
-	let obstDistance = 1;	//distance between obstacles
+	let obstDistance = distDIFF[dif];	//distance between obstacles
 	let w = DIFFICULTIES[dif];	//0.35
+	
 	let h = 1.5;
 	if (canvasStats.height > 1.8) height=1.8;
 	else height=canvasStats.height;
 	if(hForce > 0) h = height*hForce;
 	else h = Math.random()*(height-w);
+	
 	let x = obstInitDist;
 	if(obstacles.length > 0) x = obstacles.at(-1).px+obstDistance;
+	let wrapThresh = 0.86;
+	if(obstacles.length > 0 && obstacles.at(-1).py > (height-w)*wrapThresh && h > (height-w)*wrapThresh && w < 0.32) x+=obstDistance/2;
 
 	obst = {
 		px: x, py: h,	//position xy
@@ -85,7 +105,11 @@ function createObst(hForce=-1) {
 function setCanvasSize() {
 	let winSize = 0.9; 
 	canvas.width = window.innerWidth * winSize;
-	canvas.height = window.innerHeight * winSize;
+	height = window.innerHeight * winSize;
+	//console.log(height);
+	let maxHeight = 600;
+	if(height > maxHeight) height=maxHeight;
+	canvas.height = height;
 	canvasStats.width = canvas.width/canvasStats.size;
 	canvasStats.height = canvas.height/canvasStats.size;
 }
@@ -106,13 +130,21 @@ function translateSize(value) {
 
 // @brief click event
 function eventClick() {
+	start = false;
 	if(restart) {
 		init()
 		running = true;
+		requestAnimationFrame(tick);
 	}
 	rect.vy = -(0.05);
 }
 
+// @brief return the score in a coded way (including difficulty, rounded)
+// @param score
+// @return string with a coded score
+function writeScore(score) {
+	return (score*1.5**(dif-2)).toFixed(2);
+}
 
 // @brief draw all stuff
 function draw() {
@@ -136,8 +168,25 @@ function draw() {
 }
 
 // @brief gets called regulary, process every change over time
-function tick() {
-	delta = 1;	// update time in ms/100
+function tick(time) {
+	// skip rendering if tick was called too soon (limited by maxFPS)
+	let t = (1000/maxFPS)-(time-preTime)-1;
+	if(t > 0) {
+		setTimeout(function () {
+			if(running||start) requestAnimationFrame(tick);
+		}, t);
+		return;
+	}
+
+	let delta = 1;	// update time in ms/100 (kinda?)
+	if(preTime) {
+		delta = (time - preTime)/50;
+		//console.log("FPS: "+(1000/(50*delta)));
+	}
+	// speed depends on difficulty and score
+	let speedMulti = speedDIFF[dif]*(1+(score*0.004));
+	delta = delta*speedMulti;
+
 	//gravity
 	if(rect.py < canvasStats.height) rect.vy += 0.005*delta;
 	
@@ -152,11 +201,14 @@ function tick() {
 	if(rect.py < 0) rect.py = canvasStats.height;
 
 	//obstacles
+	del = false;
 	len = obstacles.length;
 	for(let i=0; i<len; i++) {
 		let obst = obstacles[i];
 
 		if(running){
+			//move obstacles
+			obst.px += -obstSpeed*delta;
 			//obstacles collisions / scoring
 			if(rect.px+rect.sx > obst.px && rect.px < obst.px + obst.sx) {
 				if(running && !obst.counted) {
@@ -164,42 +216,53 @@ function tick() {
 					obst.counted = true;
 					obst.color = "green";
 					score += 1;
-					scoreLabel.textContent = score;
+					scoreLabel.textContent = writeScore(score);
 
 					// create new element / clean up old ones
 					obstacles.push(createObst());
 					if(score > 2) {
-						obstacles[0] = null;
-						obstacles.shift();	//remove first element
+						del = true;
 					}
 				}
 				if(rect.py < obst.py || (rect.py+rect.sy) > obst.py+obst.sy) {
 					//collide
-					running = false;
+					if(notGOD) running = false;
 					
-					//ignore score:
+					//score:
 					if(obst.counted) {
-						score--;
-						scoreLabel.textContent = score;
+					//	score--;
+						scoreLabel.textContent = writeScore(score);
+						if(score > maxScore) maxScore = score;
+						maxScoreLabel.textContent = writeScore(score);
 					}
+					//if(!notGOD) score = -1;
 					
-					restart = true;
+					if(notGOD) restart = true;
 					//console.log(obst);
 				}
-			}		
 		
-			//move obstacles
-			obst.px += -obstSpeed*delta;
-		}
+			}//within x bounds
+		}//if(running)
 	}
+	// cleanup
+	if(del) {
+		obstacles[0] = null;
+		obstacles.shift();	//remove first element
+		del = false;
+	}
+	else if(del > 0) console.warn("in tick(): del is "+del+" this should not happen.");
 	//console.log(obstacles);	
 	
 	draw();
+
+	preTime = time;
+	if(running||start) requestAnimationFrame(tick);
 }
 
 
 // @brief gets called on load
 function onLoad() {
+	start = true;
 	// Call setCanvasSize initially and when window is resized
 	setCanvasSize();
 	window.addEventListener("resize", setCanvasSize);
@@ -207,9 +270,12 @@ function onLoad() {
 	init();
 
 	canvas.addEventListener('click', eventClick);
+	window.addEventListener('keydown', function(event) {if(event.key === " ") eventClick();});
+	canvas.addEventListener("touchstart", function(event) { event.preventDefault(); eventClick(); });
 	restart = true;
 	
-	setInterval(tick, 100);
+	requestAnimationFrame(tick);
+	//setInterval(tick, 100);
 }
 
 window.onload = onLoad();
