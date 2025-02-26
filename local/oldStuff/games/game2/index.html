@@ -34,7 +34,7 @@
 		top: 50%;
 		right: 0;
 		transform-origin: top right;
-}
+	}
 </style>
 </head>
 <body>
@@ -42,110 +42,14 @@
 <button onclick="location.href = '../';" id="gamesButton" class="float-left submit-button">BACK</button>
 <p class="hint">mouseClick</p>
 
-
 <script>
-	// Get the canvas element
-	var canvas = document.getElementById("myCanvas");
-	var ctx = canvas.getContext("2d");
-	
-	// constants
-	let sizeConst = 500;
-	const canvasStats = {width: canvas.width/sizeConst, height: canvas.height/sizeConst,
-		size: sizeConst};
-
-	// var
-	var rect;
-	
 	// @brief load external js
 	function loadScripts() {
 		const element = document.createElement("script");
-		//element.src = "myScript.js";
-		//document.body.appendChild(element);
+		element.src = "script.js";
+		document.body.appendChild(element);
 	}
-
-	// @brief sets the canvas to a % of the window
-	function setCanvasSize() {
-		let winSize = 0.9; 
-		canvas.width = window.innerWidth * winSize;
-		canvas.height = window.innerHeight * winSize;
-		canvasStats.width = canvas.width/canvasStats.size;
-		canvasStats.height = canvas.height/canvasStats.size;
-	}
-
-
-	// @brief translate game coordinates (0-1) to screen cooridantes
-	// @param value value to translate
-	// @return the translated value 
-	function translateToScreen(value) {
-		return value*canvasStats.size;
-	}
-
-	// @brief translate size from game size (0-1) to screen size
-	// @param value value to translate
-	// @return the translated value 
-	function translateSize(value) {
-		return value*canvasStats.size;
-	}
-
-	// @brief click event
-	function eventClick() {
-		rect.vy = -(0.03);
-	}
-
-
-	// @brief draw all stuff
-	function draw() {
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		//for every element
-		if(rect.color != "none") {
-			ctx.fillStyle = rect.color;
-			ctx.fillRect(translateToScreen(rect.px), translateToScreen(rect.py), translateSize(rect.sx), translateSize(rect.sy));
-		}
-		//console.log(rect);
-	}
-
-	// @brief gets called regulary, process every change over time
-	function tick() {
-		if(rect.py < canvasStats.height) rect.vy += 0.005; //gravity
-		rect.px += rect.vx;
-		rect.py += rect.vy;
-		if(rect.px > canvasStats.width) rect.px = 0;
-		if(rect.px < 0) rect.px = canvasStats.width;
-		if(rect.py > canvasStats.height - rect.sy) {rect.py = canvasStats.height - rect.sy;}
-		if(rect.py < 0) rect.py = canvasStats.height;
-		draw();
-	}
-
-
-	// @brief initializes everything
-	function init() {
-		rect = {
-			px: 0.4, py: 0.7,	//position xy
-			vx: 0, vy: -(0.03),		//speed xy
-			sx: 0.10, sy:0.10,	//scale xy
-			color: "blue"
-			};
-		rect.py = canvasStats.height - rect.sy*3;
-		//test
-		//rect.vy = 0.01;
-	}
-
-	// @brief gets called on load
-	function onLoad() {
-		// Call setCanvasSize initially and when window is resized
-		setCanvasSize();
-		window.addEventListener("resize", setCanvasSize);
-
-		loadScripts();
-		init();
-		
-		//try
-		canvas.addEventListener('click', eventClick);
-	
-		setInterval(tick, 100);
-	}
-
-	window.onload = onLoad();
+	loadScripts();
 </script>
 </body>
 </html>
