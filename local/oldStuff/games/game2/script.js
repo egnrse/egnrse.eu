@@ -12,6 +12,8 @@ var ctx = canvas.getContext("2d");
 let sizeConst = 500;
 const canvasStats = {width: canvas.width/sizeConst, height: canvas.height/sizeConst,
 	size: sizeConst};
+let diffBox = document.getElementById("difficultySelect");
+let scoreLabel = document.getElementById("scoreLabel");
 
 // variables
 let running = false;	// if the game is running
@@ -30,12 +32,14 @@ let DIFFICULTIES = [0.5,0.4,0.35,0.3,0.26];
 let dif = 2;	//0-4
 
 
-
 // @brief initializes everything
 function init() {
 	running = false;
 	score = 0;
 	restart = false;
+
+	dif = diffBox.value;
+	scoreLabel.textContent = score;
 
 	//player
 	rect = {
@@ -52,6 +56,7 @@ function init() {
 		obstacles.push(createObst());
 	}
 	//console.log(canvasStats.height);
+	
 }
 
 // @brief create an obstacle
@@ -159,6 +164,7 @@ function tick() {
 					obst.counted = true;
 					obst.color = "green";
 					score += 1;
+					scoreLabel.textContent = score;
 
 					// create new element / clean up old ones
 					obstacles.push(createObst());
@@ -170,6 +176,13 @@ function tick() {
 				if(rect.py < obst.py || (rect.py+rect.sy) > obst.py+obst.sy) {
 					//collide
 					running = false;
+					
+					//ignore score:
+					if(obst.counted) {
+						score--;
+						scoreLabel.textContent = score;
+					}
+					
 					restart = true;
 					//console.log(obst);
 				}
