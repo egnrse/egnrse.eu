@@ -30,7 +30,7 @@ if(localStorage && 'maxScore' in localStorage) {
 	//fetch maxScore from localStorage (local browser storage), if it exists
 	console.log("Importing localStorage.maxScore:"+localStorage.maxScore);
 	maxScore = localStorage.maxScore;
-	maxScoreLabel.textContent = maxScore;
+	maxScoreLabel.textContent = writeScore(maxScore);
 }
 let restart = false;	// when the game is over
 let preTime;
