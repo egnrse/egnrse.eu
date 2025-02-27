@@ -26,6 +26,12 @@ let running = false;	// if the game is running
 let start = false;
 let score = -1;
 let maxScore = -1;
+if(localStorage && 'maxScore' in localStorage) {
+	//fetch maxScore from localStorage (local browser storage), if it exists
+	console.log("Importing localStorage.maxScore:"+localStorage.maxScore);
+	maxScore = localStorage.maxScore;
+	maxScoreLabel.textContent = maxScore;
+}
 let restart = false;	// when the game is over
 let preTime;
 
@@ -232,9 +238,14 @@ function tick(time) {
 					if(obst.counted) {
 						score--;
 						scoreLabel.textContent = writeScore(score);
-						if(writeScore(score) > writeScore(maxScore)) maxScore = score;
-						//console.log("maxScore:"+maxScore+",  score:"+score);
-						maxScoreLabel.textContent = writeScore(maxScore);
+						//update maxScore
+						if(writeScore(score) > writeScore(maxScore)) {
+							maxScore = score;
+							//console.log("maxScore:"+maxScore+",  score:"+score);
+							// save to maxScore to localStorage
+							if(localStorage) localStorage.maxScore = maxScore;
+							maxScoreLabel.textContent = writeScore(maxScore);
+						}
 					}
 					if(!notGOD) score = -1;
 					
