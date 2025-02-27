@@ -26,12 +26,6 @@ let running = false;	// if the game is running
 let start = false;
 let score = -1;
 let maxScore = -1;
-if(localStorage && 'maxScore' in localStorage) {
-	//fetch maxScore from localStorage (local browser storage), if it exists
-	console.log("Importing localStorage.maxScore:"+localStorage.maxScore);
-	maxScore = localStorage.maxScore;
-	maxScoreLabel.textContent = writeScore(maxScore);
-}
 let restart = false;	// when the game is over
 let preTime;
 
@@ -280,6 +274,13 @@ function onLoad() {
 	window.addEventListener("resize", setCanvasSize);
 	
 	init();
+
+	//fetch maxScore from localStorage (local browser storage), if it exists
+	if(localStorage && 'maxScore' in localStorage) {
+		console.log("Importing localStorage.maxScore:"+localStorage.maxScore);
+		maxScore = localStorage.maxScore;
+		maxScoreLabel.textContent = writeScore(maxScore);
+	}
 
 	canvas.addEventListener('click', eventClick);
 	window.addEventListener('keydown', function(event) {if(event.key === " ") eventClick();});
