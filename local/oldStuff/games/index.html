@@ -16,11 +16,13 @@
 			<button onclick="location.href = '../';" id="gamesButton" class="backButton">BACK</button>
 
 			<div class="GameButtonGroup">
-				<button id="clearButton">CLEAR</button>
-				<button id="saveButton">SAVE</button>
-				<button id="loadButton">LOAD</button>
+				<button title="Want an empty canvas?" id="clearButton">CLEAR</button>
+				<button title="Save canvas to a file." id="saveButton">SAVE</button>
+				<button title="Load canvas from a file" id="loadButton" style="display: none;">LOAD</button>
 			</div>
 		</div>
+
+		<input type="file" id="loadFileInput" accept=".json" style="display: none;">
 
 		<p class="hint">wasd/arrows and space are your friends</p>
 

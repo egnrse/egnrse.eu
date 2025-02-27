@@ -26,7 +26,7 @@ export default class Game {
 	spaceJustDown = false;	// if space just got pressed (resets on 'space' keyUp event)
 	prevSpaceEvent;			// the previous event that pressing space triggered (either 'draw' or 'delete')
 	moveDraw = false;		// if we are in a moving draw (space down while moving)
-	
+
 	constructor() {
 		//console.log("new Game");
 		// get the canvas element
@@ -37,6 +37,11 @@ export default class Game {
 		window.addEventListener("resize", this.setCanvasSize.bind(this));
 		window.addEventListener("keydown", this.keyDownEvent.bind(this));
 		window.addEventListener("keyup", this.keyUpEvent.bind(this));
+		// button events
+		document.getElementById("clearButton").addEventListener("mouseup", this.clearScreenButton.bind(this));
+		document.getElementById("saveButton").addEventListener("mouseup", this.saveButton.bind(this));
+		document.getElementById("loadButton").addEventListener("mouseup", this.loadButton.bind(this));
+		document.getElementById("loadFileInput").addEventListener("change", this.inputFileChanged.bind(this));
 
 		this.init();
 	}
@@ -143,6 +148,7 @@ export default class Game {
 	 * @idea use a animation object to save and manage animations, give the excecution to the object, save animation state in the object.
 	 * currentTime */
 	update(currentTime) {
+
 		//time delta
 		let delta = -1;
 		if(typeof this.preTime === 'undefined') {
@@ -207,6 +213,9 @@ export default class Game {
 		this.preTime = currentTime;
 	}
 
+
+	/// HELPER FUNCTIONS ////////////////////
+	
 	/**
 	 * @brief test for collision between all objects (with solid=true)
 	 */
@@ -298,8 +307,44 @@ export default class Game {
 		}
 	}
 
+	/**
+	 * @brief clear the screen (delete, all objects in environment)
+	 */
+	clearScreen() {
+		//console.log("clear screen");
+		for(let i=this.environment.length-1; i>=0; i--) {
+			this.environment[i] = null;
+		}
+		this.environment = null;
+		this.environment = [];
 
-	/// HANDLERS ///////
+		//updated the screen
+		requestAnimationFrame(this.update.bind(this));
+	}
+
+	saveToUserDisk(data, name="canvasSave.json") {
+		const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+		const url = URL.createObjectURL(blob);
+		
+		// create a download link
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = name;
+		document.body.appendChild(a);
+		a.click();
+
+		// cleanup
+		document.body.removeChild(a);
+		URL.revokeObjectURL(url);
+	}
+	loadFromUserDisk(file) {
+		const fileInput = [];
+		return [];
+	}
+	
+
+
+	/// HANDLERS ////////////////////
 	
 	/**
 	 * @brief sets the canvas size to winSize percent of the inner window (updates on resize)
@@ -377,10 +422,51 @@ export default class Game {
 				break;
 		} // switch
 	} // keyDownEvent
+
+	/** @brief react to the CLEAR button (clear the screen) */
+	clearScreenButton() {
+		console.log("CLEAR button");
+		this.clearScreen()
+	}
+	/** @brief react to the SAVE button (clear the screen) */
+	saveButton() {
+		console.log("SAVE button");
+		this.saveToUserDisk(this.environment);
+	}
+	/** @brief react to the LOAD button (clear the screen) */
+	loadButton() {
+		console.log("LOAD button");
+		document.getElementById("loadFileInput").click();
+	}
+	inputFileChanged(event) {
+		const file = event.target.files[0];
+		//let x = this.loadFromUserDisk(file);
+
+		if(!file) {
+			console.warn("Game.inputFileChanged: no file selected");
+			return;
+		}
+		let fr = new FileReader();
+		//var x = 0;
+		fr.onload = function(e) {
+			let x = fr.result;
+			let array = JSON.parse(x);
+			//returns the result
+			console.log(x);
+		}
+		fr.readAsText(file);
+		//let x = this.loadFromUserDisk(file);
+	}
 }
-							
+
+	
 
 /* 
  * Just some maybe useful stuff for later
  * throw new Warning("Game.keyDownEvent: invalid 'this.prevSpaceEvent' (prevSpaceEvent:'"+this.prevSpaceEvent+"')");
+ *
+ *
+ * buffer.byteLength
+ *
+ * reader.readAsArrayBuffer(file); (for eg audio)
  */
