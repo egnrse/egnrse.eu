@@ -23,9 +23,9 @@ let notGOD = true;
 
 // variables
 let running = false;	// if the game is running
-let start = false;
-let score = -1;
-let maxScore = -1;
+let start = false;		// for the start animation
+let score = -1;			// count of achieved obstacles
+let maxScore = -1;		// maximal writeScore(score) value
 let restart = false;	// when the game is over
 let preTime;
 
@@ -233,12 +233,12 @@ function tick(time) {
 						score--;
 						scoreLabel.textContent = writeScore(score);
 						//update maxScore
-						if(writeScore(score) > writeScore(maxScore)) {
-							maxScore = score;
+						if(writeScore(score) > maxScore) {
+							maxScore = writeScore(score);
 							//console.log("maxScore:"+maxScore+",  score:"+score);
 							// save to maxScore to localStorage
 							if(localStorage) localStorage.maxScore = maxScore;
-							maxScoreLabel.textContent = writeScore(maxScore);
+							maxScoreLabel.textContent = maxScore;
 						}
 					}
 					if(!notGOD) score = -1;
@@ -279,7 +279,8 @@ function onLoad() {
 	if(localStorage && 'maxScore' in localStorage) {
 		console.log("Importing localStorage.maxScore:"+localStorage.maxScore);
 		maxScore = localStorage.maxScore;
-		maxScoreLabel.textContent = writeScore(maxScore);
+		//localStorage.maxScore = 0;		//dev
+		maxScoreLabel.textContent = maxScore;
 	}
 
 	canvas.addEventListener('click', eventClick);
