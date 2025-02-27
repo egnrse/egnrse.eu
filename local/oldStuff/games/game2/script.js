@@ -230,12 +230,13 @@ function tick(time) {
 					
 					//score:
 					if(obst.counted) {
-					//	score--;
+						score--;
 						scoreLabel.textContent = writeScore(score);
-						if(score > maxScore) maxScore = score;
-						maxScoreLabel.textContent = writeScore(score);
+						if(writeScore(score) > writeScore(maxScore)) maxScore = score;
+						//console.log("maxScore:"+maxScore+",  score:"+score);
+						maxScoreLabel.textContent = writeScore(maxScore);
 					}
-					//if(!notGOD) score = -1;
+					if(!notGOD) score = -1;
 					
 					if(notGOD) restart = true;
 					//console.log(obst);
