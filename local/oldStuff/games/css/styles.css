@@ -19,12 +19,8 @@ button {
 	border: solid 1px black;
 }
 button:hover {
-  color: #DDDDDD;
-  font-weight: bold;
-}
-button:hover {
-  color: #DDDDDD;
-  font-weight: bold;
+	color: #DDDDDD;
+	font-weight: bold;
 }
 .hint {
 	transform: rotate(90deg) translateX(50%);
@@ -32,4 +28,20 @@ button:hover {
 	top: 50%;
 	right: 0;
 	transform-origin: top right;
+}
+.bellowGameBar {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+.backButton {
+	position: absolute;
+	left: 0;
+}
+.GameButtonGroup {
+	flex-shrink: 3;
+	align-self: flex-end;
+	/*position: absolute;
+	bottom: 0;
+	left: 50%;*/
 }

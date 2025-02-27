@@ -12,8 +12,18 @@
 	</head>
 	<body>
 		<canvas id="htmlCanvas" width="400" height="400"></canvas>
-		<button onclick="location.href = '../';" id="gamesButton" class="float-left submit-button">BACK</button>
+		<div class="bellowGameBar">
+			<button onclick="location.href = '../';" id="gamesButton" class="backButton">BACK</button>
+
+			<div class="GameButtonGroup">
+				<button id="clearButton">CLEAR</button>
+				<button id="saveButton">SAVE</button>
+				<button id="loadButton">LOAD</button>
+			</div>
+		</div>
+
 		<p class="hint">wasd/arrows and space are your friends</p>
+
 		<script src="scripts/main.js" type="module"></script>
 	</body>
 </html>
