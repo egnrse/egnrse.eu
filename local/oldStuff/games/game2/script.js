@@ -232,10 +232,10 @@ function tick(time) {
 					if(obst.counted) score--;
 					scoreLabel.textContent = writeScore(score);
 					//update maxScore	
-					if(writeScore(score) > maxScore) {
+					if(Number(writeScore(score)) > Number(maxScore)) {	//force number comparison
 						maxScore = writeScore(score);
 						//console.log("maxScore:"+maxScore+",  score:"+score);
-						// save to maxScore to localStorage
+						// save maxScore to localStorage
 						if(localStorage) localStorage.maxScore = maxScore;
 						maxScoreLabel.textContent = maxScore;
 					}
