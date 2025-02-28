@@ -229,17 +229,15 @@ function tick(time) {
 					if(notGOD) running = false;
 					
 					//score:
-					if(obst.counted) {
-						score--;
-						scoreLabel.textContent = writeScore(score);
-						//update maxScore
-						if(writeScore(score) > maxScore) {
-							maxScore = writeScore(score);
-							//console.log("maxScore:"+maxScore+",  score:"+score);
-							// save to maxScore to localStorage
-							if(localStorage) localStorage.maxScore = maxScore;
-							maxScoreLabel.textContent = maxScore;
-						}
+					if(obst.counted) score--;
+					scoreLabel.textContent = writeScore(score);
+					//update maxScore	
+					if(writeScore(score) > maxScore) {
+						maxScore = writeScore(score);
+						//console.log("maxScore:"+maxScore+",  score:"+score);
+						// save to maxScore to localStorage
+						if(localStorage) localStorage.maxScore = maxScore;
+						maxScoreLabel.textContent = maxScore;
 					}
 					if(!notGOD) score = -1;
 					
