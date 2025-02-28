@@ -148,6 +148,7 @@ export default class Game {
 	 * @idea use a animation object to save and manage animations, give the excecution to the object, save animation state in the object.
 	 * currentTime */
 	update(currentTime) {
+		//console.log(this.environment);
 
 		//time delta
 		let delta = -1;
@@ -313,8 +314,22 @@ export default class Game {
 	clearScreen() {
 		//console.log("clear screen");
 		for(let i=this.environment.length-1; i>=0; i--) {
+			// animation
+			let animTry = new Environment(g.Point2D(), g.Point2D(1,1), undefined, "blue", "strokeRect");
+			animTry.lineWidth = 2;
+			animTry.color = this.environment[i].getColor;
+			animTry.pos = this.environment[i].getPos;
+			animTry.size = this.environment[i].getSize;
+			animTry.solid = false;
+			this.animDrawList.push(animTry);
+			this.addAnimation(animTry, "AppearSize", "xy");
+			this.addAnimation(animTry, "FadeOut");
+			
+			// delete
 			this.environment[i] = null;
 		}
+		
+		// reset environment
 		this.environment = null;
 		this.environment = [];
 
@@ -322,7 +337,12 @@ export default class Game {
 		requestAnimationFrame(this.update.bind(this));
 	}
 
-	saveToUserDisk(data, name="canvasSave.json") {
+	/**
+	 * @brief save an env array data (as a json) to a file
+	 * @param data: the data to save
+	 * @param name: the name of the saved file
+	 */
+	saveEnvToUserDisk(data, name="canvasSave.json") {
 		const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
 		const url = URL.createObjectURL(blob);
 		
@@ -337,9 +357,36 @@ export default class Game {
 		document.body.removeChild(a);
 		URL.revokeObjectURL(url);
 	}
-	loadFromUserDisk(file) {
-		const fileInput = [];
-		return [];
+	/**
+	 * @brief load a file and save to this.environment (overwrites this.environment)
+	 * @details expects the file to be an array of Environment objects as json
+	 * @param the file to load
+	 */
+	loadEnvFromUserDisk(file) {
+		if(!file) {
+			console.warn("Game.loadEnvFromUserDisk: no file selected");
+			return;
+		}
+		let fr = new FileReader();
+		fr.onload = (e) => {
+			let x = fr.result;
+			let preEnv = JSON.parse(x);
+			//console.log(preEnv);
+			let postEnv = [];
+			//convert each object in preEnv to the class Environment
+			for(let i=0; i<preEnv.length;i++) {
+				let obj = new Environment();
+				Object.assign(obj, preEnv[i]);
+				postEnv.push(obj);
+			}
+			//returns the result
+			this.environment = postEnv;
+			//console.log(this.environment);
+			
+			//updated the screen
+			requestAnimationFrame(this.update.bind(this));
+		}
+		fr.readAsText(file);
 	}
 	
 
@@ -425,37 +472,25 @@ export default class Game {
 
 	/** @brief react to the CLEAR button (clear the screen) */
 	clearScreenButton() {
-		console.log("CLEAR button");
+		//console.log("CLEAR button");
 		this.clearScreen()
 	}
-	/** @brief react to the SAVE button (clear the screen) */
+	/** @brief react to the SAVE button (save the canvas) */
 	saveButton() {
-		console.log("SAVE button");
-		this.saveToUserDisk(this.environment);
+		//console.log("SAVE button");
+		this.saveEnvToUserDisk(this.environment);
 	}
-	/** @brief react to the LOAD button (clear the screen) */
+	/** @brief react to the LOAD button (load a *.json file with a hidden input box) */
 	loadButton() {
-		console.log("LOAD button");
+		//console.log("LOAD button");
 		document.getElementById("loadFileInput").click();
 	}
+	/**
+	 * @brief react to file change events (loads a *.json file and replaces this.environment)
+	 */
 	inputFileChanged(event) {
-		const file = event.target.files[0];
-		//let x = this.loadFromUserDisk(file);
-
-		if(!file) {
-			console.warn("Game.inputFileChanged: no file selected");
-			return;
-		}
-		let fr = new FileReader();
-		//var x = 0;
-		fr.onload = function(e) {
-			let x = fr.result;
-			let array = JSON.parse(x);
-			//returns the result
-			console.log(x);
-		}
-		fr.readAsText(file);
-		//let x = this.loadFromUserDisk(file);
+		let file = event.target.files[0];
+		this.loadEnvFromUserDisk(file, this.environment);
 	}
 }
 
