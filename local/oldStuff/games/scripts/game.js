@@ -26,7 +26,9 @@ export default class Game {
 	spaceJustDown = false;	// if space just got pressed (resets on 'space' keyUp event)
 	prevSpaceEvent;			// the previous event that pressing space triggered (either 'draw' or 'delete')
 	moveDraw = false;		// if we are in a moving draw (space down while moving)
-
+	colors = ["red","orange","yellow","teal","pink","purple","crimson","green","white","black","blue"];	//0-9 : drawing colors, 10 : player color
+	drawingColor = this.colors[0];	// the color new env object appear in
+	
 	constructor() {
 		//console.log("new Game");
 		// get the canvas element
@@ -55,15 +57,17 @@ export default class Game {
 		this.setCanvasSize();
 
 		//position, size, velocity, color
-		this.player = new Player(g.Point2D(2*this.blockSize,2*this.blockSize), g.Point2D(this.blockSize, this.blockSize));
-		this.environment = [];
-		this.environment.push(new Environment(g.Point2D(this.blockSize,this.blockSize), g.Point2D(this.blockSize,this.blockSize)));
+		this.player = new Player(g.Point2D(2*this.blockSize,2*this.blockSize), g.Point2D(this.blockSize, this.blockSize), g.Point2D(), this.colors[10]);
 		this.animDrawList = [];
 		this.animation = [];
 		this.preTime = 0;
 
 		this.spaceJustDown = false
 		this.moveDraw = false
+		this.drawingColor = this.colors[0];
+
+		this.environment = [];
+		this.environment.push(new Environment(g.Point2D(this.blockSize,this.blockSize), g.Point2D(this.blockSize,this.blockSize), undefined, this.drawingColor));
 	}
 
 	/**
@@ -267,7 +271,7 @@ export default class Game {
 
 	/**
 	 * @brief draw or delete a square at point with size
-	 * 		depending different factors (eg. environment, prevSpaceEvent, moveDraw)
+	 * 		depending different factors (eg. environment, prevSpaceEvent, moveDraw, drawingColor)
 	 * 		(also animates the player)
 	 * @param g.Point2D point: where to draw/delete
 	 * @param g.Point2D size: how big to draw/delete
@@ -277,7 +281,14 @@ export default class Game {
 		let empty = true;	// if the current position is empty (and should be drawn on)
 		let indexFound = this.envExist(point)
 		if(indexFound >= 0) {
-			if(!this.moveDraw || this.prevSpaceEvent == "delete") {	
+			empty = false;
+			// overwrite differently colored patches (if not in a movedraw)
+			if((!this.moveDraw || this.prevSpaceEvent == "draw") && this.environment[indexFound].color != this.drawingColor) {
+				this.prevSpaceEvent = "draw";
+				this.environment[indexFound].color = this.drawingColor;
+			}
+			// handle deletion
+			else if(!this.moveDraw || this.prevSpaceEvent == "delete") {
 				// animation
 				let animTry = new Environment(g.Point2D(), g.Point2D(1,1), undefined, "blue", "strokeRect");
 				animTry.lineWidth = 2;
@@ -294,13 +305,12 @@ export default class Game {
 				this.environment[indexFound] = null;
 				this.environment.splice(indexFound,1);
 			}
-			empty = false;
-		}
+		}//if(indexFound >= 0)
 		if(empty) {
 			if(!this.moveDraw || this.prevSpaceEvent == "draw") {
 				//console.log("drawing")
 				this.prevSpaceEvent = "draw";
-				this.environment.push(new Environment({...point}, {...size}));
+				this.environment.push(new Environment({...point}, {...size}, undefined, this.drawingColor));
 			}
 		}
 		if(!this.moveDraw) {
@@ -462,6 +472,11 @@ export default class Game {
 					else {	// if space is already longer down
 						//console.log("already down")
 					}
+				}
+				if(key >= 48 && key <= 57) {	//0-9 : change the color to draw with
+					let num = key - 48;
+					console.log("color change to "+num);	//dev
+					this.drawingColor = this.colors[num];
 				}
 				if(this.animation.length < 1) {
 					requestAnimationFrame(this.update.bind(this));
