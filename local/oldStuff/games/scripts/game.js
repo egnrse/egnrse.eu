@@ -27,7 +27,7 @@ export default class Game {
 	prevSpaceEvent;			// the previous event that pressing space triggered (either 'draw' or 'delete')
 	moveDraw = false;		// if we are in a moving draw (space down while moving)
 	colors = ["red","orange","yellow","teal","pink","purple","crimson","green","white","black","blue"];	//0-9 : drawing colors, 10 : player color
-	drawingColor = this.colors[0];	// the color new env object appear in
+	drawingColor = this.colors[0];	// the color new env objects appear in
 	
 	constructor() {
 		//console.log("new Game");
@@ -475,7 +475,7 @@ export default class Game {
 				}
 				if(key >= 48 && key <= 57) {	//0-9 : change the color to draw with
 					let num = key - 48;
-					console.log("color change to "+num);	//dev
+					//console.log("color change to "+num);
 					this.drawingColor = this.colors[num];
 				}
 				if(this.animation.length < 1) {
