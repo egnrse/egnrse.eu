@@ -28,7 +28,7 @@ export default class Game {
 	moveDraw = false;		// if we are in a moving draw (space down while moving)
 	colors = ["red","orange","yellow","teal","pink","purple","crimson","green","white","black","blue"];	//0-9 : drawing colors, 10 : player color
 	drawingColor = this.colors[0];	// the color new env objects appear in
-	
+
 	constructor() {
 		//console.log("new Game");
 		// get the canvas element
@@ -519,4 +519,8 @@ export default class Game {
  * buffer.byteLength
  *
  * reader.readAsArrayBuffer(file); (for eg audio)
+ *
+ * this.testSound = new Audio("./assets/test.wav");
+ * this.testSound.play();
+ *
  */
