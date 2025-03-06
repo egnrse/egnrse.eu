@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<meta name="author" content="egnrse">
+	<meta name="description" content="Nothing here, just another personal webpage.">
+	<meta name="fediverse:creator" content="@egnrse@mastodon.social"> <!-- allow mastodon qotes -->
+
+	<title>3.Ndangered Music</title>
+	<link rel="icon" type="image/png" href="favicon.png">
+	<link rel="stylesheet" href="localStyle.css">
+
+</head>
+<body>
+	<div class=center>
+		<div class=main>
+			<h1>Music by 3.Ndangered (= also me)</h1>
+			<a href="index.html">back &#x1F36A;</a><br>
+			<p>&#127850;&#127850;&#127850; told you....</p>
+
+			<div id="music"> <!-- Music/Songs div-->
+				<div class="music" onclick="loadMusic()">
+					🎵 CLICK: load external music (storage u know?) 🎵
+				</div>
+			</div>  <!-- Music/Songs div-->
+			<style>
+			.music {
+				width: 100%;
+				height: 150px;
+				background: #333;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				color: white;
+				font-size: 20px;
+				font-weight: bold;
+				cursor: pointer;
+				border-radius: 10px;
+				border: 2px solid #ff5500;
+				text-align: center;
+			}
+			.music:hover {
+				background: #444;
+			}
+			</style>
+			<script>
+			 	function loadMusic() {
+					const externalMusicDiv = document.createElement("div");
+					document.getElementById("music").innerHTML = ' \
+				<iframe width="100%" height="100" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/951601684&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/3ndangered" title="3.Ndangered" target="_blank" style="color: #cccccc; text-decoration: none;">3.Ndangered</a> · <a href="https://soundcloud.com/3ndangered/changing-tides" title="Changing Tides" target="_blank" style="color: #cccccc; text-decoration: none;">Changing Tides</a></div>\
+\
+				<iframe width="100%" height="100" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/846091075&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/3ndangered" title="3.Ndangered" target="_blank" style="color: #cccccc; text-decoration: none;">3.Ndangered</a> · <a href="https://soundcloud.com/3ndangered/metro" title="Metro" target="_blank" style="color: #cccccc; text-decoration: none;">Metro</a></div>\
+\
+				<iframe width="100%" height="100" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1146235933&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/3ndangered" title="3.Ndangered" target="_blank" style="color: #cccccc; text-decoration: none;">3.Ndangered</a> · <a href="https://soundcloud.com/3ndangered/aory-loopop-mega-contest" title="Aory (Loopop Mega-Contest)" target="_blank" style="color: #cccccc; text-decoration: none;">Aory (Loopop Mega-Contest)</a></div>\
+\
+				<iframe width="100%" height="100" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/812870125&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/3ndangered" title="3.Ndangered" target="_blank" style="color: #cccccc; text-decoration: none;">3.Ndangered</a> · <a href="https://soundcloud.com/3ndangered/fighting-till-we-cant" title="Fighting Till We Can&#x27;t" target="_blank" style="color: #cccccc; text-decoration: none;">Fighting Till We Can&#x27;t</a></div>\
+\
+				<iframe width="100%" height="100" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/1017559522&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/3ndangered" title="3.Ndangered" target="_blank" style="color: #cccccc; text-decoration: none;">3.Ndangered</a> · <a href="https://soundcloud.com/3ndangered/best-friend" title="Best Friend" target="_blank" style="color: #cccccc; text-decoration: none;">Best Friend</a></div> \
+					';
+					//document.getElementById("music").appendChild(externalMusicDiv);
+				}
+			</script>
+			<p>there might be more somewhere else....</p>
+
+			<p>
+			<a href="index.html">back</a>
+			</p>
+			<p>
+			 <!-- other mes -->
+			<a href="https://github.com/egnrse" target="_blank" rel="noopener"><img src="https://github.githubassets.com/assets/GitHub-Mark-ea2971cee799.png" alt="GitHub" height="24" style="filter: invert(100%);"></a>
+			<a rel="me" href="https://mastodon.social/@egnrse" target="_blank" rel="noopener"><img src="https://joinmastodon.org/logos/logo-purple.svg" alt="Mastodon" height="20"></a>
+			<a href="https://soundcloud.com/3ndangered" target="_blank" rel="noopener"><img src="https://www.freepnglogos.com/uploads/soundcloud-logo-png/soundcloud-logo-soundcloud-icon-logo-png-transparent-svg-vector-bie-supply-13.png" alt="SoundCloud" height="20"></a>
+			</p>
+		</div>
+		<!-- main end -->
+		<center>
+			<!--<p>
+			<a href="https://fediring.net/previous?host=egnrse.eu">←</a>
+    		<a href="https://fediring.net/">Fediring</a>
+    		<a href="https://fediring.net/next?host=egnrse.eu">→</a>
+			</p>-->
+		</center>
+		<!-- SOME 88x31 BELLOW -->
+		<div>
+			<a target="_blank" href="https://matrix.org/"><img src="/local/badges/matrix.png" alt="Matrix"></a>
+			<img src="/local/badges/nb_noproblem.jpg" alt="nonbinary_noproblem">
+			<iframe src="//incr.easrng.net/badge?key=egnrse" style="background: url(//incr.easrng.net/bg.gif)" title="increment badge" width="88" height="31" frameborder="0"></iframe>
+			<!-- OTHER INTERESTING STUFF:
+			https://libdb.so/
+			-->
+		</div>
+	</div> <!-- center end-->
+</body>
+</html>
