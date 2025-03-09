@@ -5,17 +5,17 @@
 //console.log("test");
 
 // Get the canvas element
-var canvas = document.getElementById("myCanvas");
-var ctx = canvas.getContext("2d");
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
 
 // constants
 let sizeConst = 500;
 const canvasStats = {width: canvas.width/sizeConst, height: canvas.height/sizeConst,
 	size: sizeConst};
-let diffBox = document.getElementById("difficultySelect");
-let scoreLabel = document.getElementById("scoreLabel");
-let maxScoreLabel = document.getElementById("maxScoreLabel");
-let fpsBox = document.getElementById("fpsBox");
+const diffBox = document.getElementById("difficultySelect");
+const scoreLabel = document.getElementById("scoreLabel");
+const maxScoreLabel = document.getElementById("maxScoreLabel");
+const fpsBox = document.getElementById("fpsBox");
 let maxFPS;		// 5-inf
 
 //dev
@@ -36,15 +36,81 @@ let rect = {	//player
 		color: "blue"
 		};
 let obstacles;
-let obstSpeed = 0.03;
+const obstSpeed = 0.03;
 
 //difficulty
-let DIFFICULTIES = [0.5,0.4,0.35,0.3,0.24];	//gap
-let distDIFF = [1,0.9,0.8,0.8,0.8];			//obstacle distance
-let speedDIFF = [0.85,0.95,1,1.1,1.3];		//speed multiplier
+const DIFFICULTIES = [0.5,0.4,0.35,0.3,0.24];	//gap
+const distDIFF = [1,0.9,0.8,0.8,0.8];			//obstacle distance
+const speedDIFF = [0.85,0.95,1,1.1,1.3];		//speed multiplier
 let dif = 2;	//0-4
 
 
+/// AUDIO //////////
+// sound variables
+let audioCtx;					// using the Web Audio API
+let musicGainNode;					// gain of the music/theme
+let audioLoaded = false;		// if all audio has been loaded (tested before playback)
+let stopThemeLoop = false;		// if the looping theme should be stopped
+// audio files
+let themeStart;
+let themeLoop;
+
+// @brief load (and decode) audio from url async
+// @return the audio buffer
+async function loadAudioAsync(url) {
+	let response = await fetch(url);
+	let arrayBuffer = await response.arrayBuffer();
+	return await audioCtx.decodeAudioData(arrayBuffer);
+}
+
+// @brief loop audioLoop starting from startingTime (can be stopped by setting stopThemeLoop)
+function appendLoop(audioLoop, startingTime) {
+	const src = audioCtx.createBufferSource();
+	src.buffer = audioLoop;
+	src.connect(musicGainNode);
+	src.start(startingTime);
+	// automatically extend the loop
+	src.onended = ()=>{ if(!stopThemeLoop) appendLoop(audioLoop, startingTime+audioLoop.duration); }
+}
+
+// @brief load the audio files and setup some playback
+// @details exits prematurely if AudioContext could not be initialized
+async function audioInit() {
+	try { audioCtx = new AudioContext(); }
+	catch(e) {
+		alert('Audio will not work, because the Web Audio API is not supported in this browser');
+		console.error('Audio will not work, because the Web Audio API is not supported in this browser');
+		audioLoaded = false;
+		return;
+	}
+	themeStart = await loadAudioAsync('assets/FlappyBlocks_mainTheme00_Start.mp3');
+	themeLoop = await loadAudioAsync('assets/FlappyBlocks_mainTheme00_Loop.mp3');
+	//console.log("audio loaded async");
+	audioLoaded = true;
+
+	musicGainNode = audioCtx.createGain();
+	musicGainNode.connect(audioCtx.destination);
+	musicGainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+
+	const src = audioCtx.createBufferSource();
+	src.buffer = themeStart;
+	src.connect(musicGainNode);
+	src.start();
+	src.onended = appendLoop(themeLoop, audioCtx.currentTime+themeStart.duration);
+
+	// OLD API version
+	//themeStart = new Audio('assets/FlappyBlocks_mainTheme00_Start.mp3');
+	//themeLoop = new Audio('assets/FlappyBlocks_mainTheme00_Loop.mp3');
+	//console.log("audio loaded");
+
+	// loop the music
+	//themeStart.addEventListener('ended', () => {themeLoop.play(); console.log("playing Loop");});
+	//themeLoop.addEventListener('ended', () => {themeLoop.play();});
+	//themeStart.play();
+}
+
+
+/// GAME //////////
 // @brief initializes everything
 function init() {
 	running = false;
@@ -272,6 +338,7 @@ function onLoad() {
 	window.addEventListener("resize", setCanvasSize);
 	
 	init();
+	audioInit();
 
 	//fetch maxScore from localStorage (local browser storage), if it exists
 	if(localStorage && 'maxScore' in localStorage) {
