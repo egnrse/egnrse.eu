@@ -46,14 +46,25 @@ let dif = 2;	//0-4
 
 
 /// AUDIO //////////
-// sound variables
+// sound nodes
 let audioCtx;					// using the Web Audio API
-let musicGainNode;					// gain of the music/theme
+let musicGainNode;				// gain of the music/theme
+let sfxGainNode;				// gain of the sfx
+let audioDeathFilter;			// masterIsh LP filter
+// sound variables
 let audioLoaded = false;		// if all audio has been loaded (tested before playback)
 let stopThemeLoop = false;		// if the looping theme should be stopped
+let deathFilterInitFreq = 17000;	// filter init freq
+let deathFilterDeathFreq = 2000;	// filter death freq
+let deathFilterSpeed = 2;		// changes the speed of the filter movements on death and init
 // audio files
 let themeStart;
 let themeLoop;
+let sfxDie;
+let sfxScore;
+let sfxScoreBig;
+
+//let themeQueue = [];	// list of theme sound objects
 
 // @brief load (and decode) audio from url async
 // @return the audio buffer
@@ -63,14 +74,35 @@ async function loadAudioAsync(url) {
 	return await audioCtx.decodeAudioData(arrayBuffer);
 }
 
+// @brief plays the given sound
+// @param sound: the sound blob to play (expects it decoded)
+// @param out: the destination the created node connects to
+// @param speed: the speed of the playback (values <= 0 generate random speeds)
+// @return the created audio node
+function playSound(sound, out=audioCtx.destination, speed=-1) {
+	let randScale = 0.002;
+	if(speed <= 0) speed = 1-randScale + Math.random()*randScale*2;
+	let src = audioCtx.createBufferSource();
+	src.buffer = sound;
+	src.playbackRate.setValueAtTime(speed, audioCtx.currentTime);
+	src.connect(out);
+	src.start();
+	return src;
+}
+
 // @brief loop audioLoop starting from startingTime (can be stopped by setting stopThemeLoop)
 function appendLoop(audioLoop, startingTime) {
 	const src = audioCtx.createBufferSource();
 	src.buffer = audioLoop;
+	//src.playbackRate.setValueAtTime(0.03**(dif-2), audioCtx.currentTime);
+	src.playbackRate.setValueAtTime(1, audioCtx.currentTime);
 	src.connect(musicGainNode);
 	src.start(startingTime);
 	// automatically extend the loop
-	src.onended = ()=>{ if(!stopThemeLoop) appendLoop(audioLoop, startingTime+audioLoop.duration); }
+	src.onended = ()=>{ if(!stopThemeLoop) appendLoop(audioLoop, startingTime+audioLoop.duration); }	//linearRampToValueAtTime
+	//themeQueue.push(src);
+	//if(themeQueue.length > 1) themeQueue.shift();	// clean up old elements
+	//console.log(themeQueue);
 }
 
 // @brief load the audio files and setup some playback
@@ -85,18 +117,34 @@ async function audioInit() {
 	}
 	themeStart = await loadAudioAsync('assets/FlappyBlocks_mainTheme00_Start.mp3');
 	themeLoop = await loadAudioAsync('assets/FlappyBlocks_mainTheme00_Loop.mp3');
+	sfxDie = await loadAudioAsync('assets/DieSfx_norm.mp3');
+	sfxScore = await loadAudioAsync('assets/ScoreSfx_norm.mp3');
+	sfxScoreBig = await loadAudioAsync('assets/BigScoreSfx_norm.mp3');
 	//console.log("audio loaded async");
-	audioLoaded = true;
+
+	audioDeathFilter = audioCtx.createBiquadFilter();
+	audioDeathFilter.type = "lowpass";
+	audioDeathFilter.frequency.setValueAtTime(deathFilterInitFreq, audioCtx.currentTime);
+	audioDeathFilter.connect(audioCtx.destination);
 
 	musicGainNode = audioCtx.createGain();
-	musicGainNode.connect(audioCtx.destination);
-	musicGainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+	musicGainNode.gain.setValueAtTime(0.8, audioCtx.currentTime);
+	musicGainNode.connect(audioDeathFilter);
+	
+	sfxGainNode = audioCtx.createGain();
+	sfxGainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+	sfxGainNode.connect(audioDeathFilter);
+	
+	audioLoaded = true;
 
+	//appendLoop(themeLoop, audioCtx.currentTime);
+	let now = audioCtx.currentTime;
 	const src = audioCtx.createBufferSource();
 	src.buffer = themeStart;
 	src.connect(musicGainNode);
-	src.start();
-	src.onended = appendLoop(themeLoop, audioCtx.currentTime+themeStart.duration);
+	src.start(now);
+	src.onended = ()=>{appendLoop(themeLoop, now+themeStart.duration);}
+	//themeQueue.push(src);
 
 	// OLD API version
 	//themeStart = new Audio('assets/FlappyBlocks_mainTheme00_Start.mp3');
@@ -108,6 +156,9 @@ async function audioInit() {
 	//themeLoop.addEventListener('ended', () => {themeLoop.play();});
 	//themeStart.play();
 }
+
+/// SETTINGS //////////
+
 
 
 /// GAME //////////
@@ -138,6 +189,14 @@ function init() {
 		obstacles.push(createObst());
 	}
 	//console.log(canvasStats.height);
+
+	// sound
+	if(audioLoaded) {
+		//reset filter on level start
+		audioDeathFilter.frequency.cancelScheduledValues(audioCtx.currentTime);
+		audioDeathFilter.frequency.linearRampToValueAtTime(deathFilterInitFreq- (deathFilterInitFreq-deathFilterDeathFreq)/4, audioCtx.currentTime+deathFilterSpeed);
+		audioDeathFilter.frequency.setValueAtTime(deathFilterInitFreq, audioCtx.currentTime+deathFilterSpeed);
+	}
 	
 }
 
@@ -198,6 +257,10 @@ function translateSize(value) {
 function eventClick() {
 	start = false;
 	if(restart) {
+		// deal with suspended audio (because of the browser)
+		if(audioCtx.state === "suspended") {
+			audioCtx.resume();
+		}
 		init()
 		running = true;
 		requestAnimationFrame(tick);
@@ -283,6 +346,10 @@ function tick(time) {
 					obst.color = "green";
 					score += 1;
 					scoreLabel.textContent = writeScore(score);
+					if(audioLoaded) {
+						if(score%10 == 0) playSound(sfxScoreBig, sfxGainNode);
+						playSound(sfxScore, sfxGainNode);
+					}
 
 					// create new element / clean up old ones
 					obstacles.push(createObst());
@@ -293,6 +360,10 @@ function tick(time) {
 				if(rect.py < obst.py || (rect.py+rect.sy) > obst.py+obst.sy) {
 					//collide
 					if(notGOD) running = false;
+					if(audioLoaded) {
+						playSound(sfxDie, sfxGainNode);
+						audioDeathFilter.frequency.linearRampToValueAtTime(deathFilterDeathFreq, audioCtx.currentTime);
+					}
 					
 					//score:
 					if(obst.counted) score--;
