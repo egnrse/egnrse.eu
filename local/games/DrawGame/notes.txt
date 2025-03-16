@@ -1,0 +1,54 @@
+learn requestAnimationFrame()
+
+# folders:
+- scripts
+- assets
+	- audio
+	- images
+- css
+index.html
+
+use a general game library (my own)?
+
+# class structure
+- game (general rendering)
+	- player (movement)
+	- environment (stuff to interact)
+	- atmosphere (music, bg)
+	- ui (buttons, settings)
+	- animation
+
+make collision a library function
+
+animations:
+	multiple on one object
+	different animations
+
+# ideas:
+	-save on server (display other creations)? (rate?)
+		(super small file only pixel per pixel?)
+	-multiple colors (custom colors?)
+	-shaders?
+	animation:
+		drawRec expanding on delete/inward on draw (with the environment color)
+	ui:
+		save (inbrowser or file), load
+		sound settings (off/on/loudness?)
+		score? (time spend active(longer better) + interactions(only matter much in the beginning)?)
+		hint button?
+	sound:
+		background atmosphere
+		sounds: draw/delete, ui-interact, wall
+
+
+# later:
+const audio = new Audio("audio.mp3");
+function playSound() {
+    audio.play();
+}
+function pauseSound() {
+    audio.pause();
+}
+window.onload = () => {
+    playSound();
+};
