@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="viewport" content="width=device-width, initial-scale=0.5, viewport-fit=cover">
 
 		<meta name="author" content="egnrse">
 		<meta name="description" content="FlappyBlocks, surely not another one...right?">
@@ -73,6 +73,19 @@
 
 </div>
 <script>
+	// @brief alert the user to too little width (to reasonably play the game)
+	function testWidth() {
+		let width = window.innerWidth;
+		if(width < 900) {
+			let mobile = "";
+			if(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) mobile = "Try rotating the screen. ";
+			alert("The Window might have too little width. " + mobile + "(current width: " + width +")");
+		}
+	}
+	window.addEventListener("resize", testWidth);
+	testWidth();	//call also in the beginning
+
+
 	// @brief load external js
 	function loadScripts() {
 		const element = document.createElement("script");
