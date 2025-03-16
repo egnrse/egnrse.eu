@@ -90,6 +90,28 @@ class GameLibrary {
 		let m2 = (1-Math.cos(mu*Math.PI))/2;
 		return val1*(1-m2) + val2*m2;
 	}
+
+	/** 
+	 * @brief convert key to keyCode
+	 * @param the key string to convert
+	 * @return the keyCode
+	 */
+	static keyToKeyCode(key) {
+		const keyToKeyCode = {
+			' ': 32,
+			'ArrowLeft': 37,
+			'ArrowUp': 38,
+			'ArrowRight': 39,
+			'ArrowDown': 40,
+		};
+		if (keyToKeyCode[key] !== undefined) {
+			return keyToKeyCode[key];
+		}
+		else {
+			console.warn("Game:keyToKeyCode(): key '"+key+"' not found in translation obj.");
+			return -1;
+		}
+	}
 }
 
 export { GameLibrary as g };

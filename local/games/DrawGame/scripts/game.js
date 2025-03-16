@@ -29,6 +29,13 @@ export default class Game {
 	colors = ["red","orange","yellow","teal","pink","purple","crimson","green","white","black","blue"];	//0-9 : drawing colors, 10 : player color
 	drawingColor = this.colors[0];	// the color new env objects appear in
 
+	// touch events information (many are of type g.Point2D)
+	touch = {
+		start: g.Point2D(-1,-1),	// start position
+		end: g.Point2D(-1,-1),		// end position
+		deadzone: g.Point2D(50,50),	// how much movement is ignored
+	};
+
 	constructor() {
 		//console.log("new Game");
 		// get the canvas element
@@ -39,6 +46,9 @@ export default class Game {
 		window.addEventListener("resize", this.setCanvasSize.bind(this));
 		window.addEventListener("keydown", this.keyDownEvent.bind(this));
 		window.addEventListener("keyup", this.keyUpEvent.bind(this));
+		// touch events
+		window.addEventListener("touchstart", this.touchstartEvent.bind(this));
+		window.addEventListener("touchend", this.touchendEvent.bind(this));
 		// button events
 		document.getElementById("clearButton").addEventListener("mouseup", this.clearScreenButton.bind(this));
 		document.getElementById("saveButton").addEventListener("mouseup", this.saveButton.bind(this));
@@ -55,6 +65,9 @@ export default class Game {
 		//console.log("init");
 		this.gameState = -1;
 		this.setCanvasSize();
+		// touch
+		this.touch.start = g.Point2D(-1,-1);
+		this.touch.end = g.Point2D(-1,-1);
 
 		//position, size, velocity, color
 		this.player = new Player(g.Point2D(2*this.blockSize,2*this.blockSize), g.Point2D(this.blockSize, this.blockSize), g.Point2D(), this.colors[10]);
@@ -398,7 +411,7 @@ export default class Game {
 		}
 		fr.readAsText(file);
 	}
-	
+
 
 
 	/// HANDLERS ////////////////////
@@ -422,12 +435,11 @@ export default class Game {
 		if(typeof this.player !== "undefined") this.draw(this.ctx);
 	}
 
-
 	/**
 	 * @brief handles key up events
 	 */
 	keyUpEvent(event) {
-		let key = event.keyCode;
+		let key = event.keyCode || g.keyToKeyCode(event.key);	//use keyCode if available, fallback to key
 		//console.log(key+" up")
 
 		switch(this.gameState) {
@@ -437,19 +449,21 @@ export default class Game {
 					this.moveDraw = false;
 				}
 		}
-
 	}
 
 	/**
 	 * @brief handles key down events
 	 */
 	keyDownEvent(event) {
-		let key = event.keyCode;
+		//let key = event.keyCode;
+		let key = event.keyCode || g.keyToKeyCode(event.key);	//use keyCode if available, fallback to key
+		
 		//console.log(key+" down");
 
 		switch(this.gameState) {
 			case 0:
 				// arrow keys / wasd : player move
+				//if(key >= 37 && key <= 40 || key == 65 || key == 68 || key == 83 || key == 87) {
 				if(key >= 37 && key <= 40 || key == 65 || key == 68 || key == 83 || key == 87) {
 					this.player.step(key);
 					this.addAnimation("player", "BounceSize", "xy", "0.3", 0.2);
@@ -485,6 +499,7 @@ export default class Game {
 		} // switch
 	} // keyDownEvent
 
+	/// Buttons ///
 	/** @brief react to the CLEAR button (clear the screen) */
 	clearScreenButton() {
 		//console.log("CLEAR button");
@@ -507,9 +522,70 @@ export default class Game {
 		let file = event.target.files[0];
 		this.loadEnvFromUserDisk(file, this.environment);
 	}
-}
 
-	
+	/// Touch ///
+	/** @brief handle touchstart events */
+	touchstartEvent(event) {
+		this.touch.start = g.Point2D(event.changedTouches[0].screenX,event.changedTouches[0].screenY);
+		this.touch.end = g.Point2D(-1,-1);
+	}
+	/** @brief handle touchend events */
+	touchendEvent(event) {
+		this.touch.end = g.Point2D(event.changedTouches[0].screenX,event.changedTouches[0].screenY);
+		this.touchHandler(this.touch);
+	}
+	/** @brief interface touch events with Game */
+	touchHandler(t) {
+		//let t = this.touch;		//fetch the touch object from this
+		let diff = g.Point2D(t.end.x - t.start.x, t.end.y-t.start.y);
+		let keyObj = {
+				altKey: false,
+				ctrlKey: false,
+				shiftKey: false,
+				metaKey: false
+			};
+		if(diff.x > t.deadzone.x && Math.abs(diff.y) < t.deadzone.y) {
+			//console.log("swipe right");
+			keyObj.key = 'ArrowRight';
+		}
+		else if(diff.x < -t.deadzone.x && Math.abs(diff.y) < t.deadzone.y) {
+			//console.log("swipe left");
+			keyObj.key = 'ArrowLeft';
+		}
+		else if(diff.y > t.deadzone.y && Math.abs(diff.x) < t.deadzone.x) {
+			//console.log("swipe down");
+			keyObj.key = 'ArrowDown';
+		}
+		else if(diff.y < -t.deadzone.y && Math.abs(diff.x) < t.deadzone.x) {
+			//console.log("swipe up");
+			keyObj.key = 'ArrowUp';
+		}
+		else if(Math.abs(diff.y) < t.deadzone.y && Math.abs(diff.x) < t.deadzone.x) {
+			//console.log("click");
+			keyObj.key = ' ';
+			keyObj.codey = 'Space';
+		}
+		else if(diff.x > t.deadzone.x) {
+			console.log("swipe right (diagonal)");
+			keyObj.key = 'ArrowRight';
+		}
+		else if(diff.x < -t.deadzone.x) {
+			console.log("swipe left (diagonal)");
+			keyObj.key = 'ArrowLeft';
+		}
+		else {
+			console.log(this.touch);
+		}
+		if(keyObj.key !== undefined) {
+			if(keyObj.code === undefined) keyObj.code = keyObj.key;	// does not always work! be careful
+			//console.log(keyObj);
+			this.keyDownEvent(keyObj);
+			this.keyUpEvent(keyObj);
+		}
+	}//touchHandler
+
+}//Game
+
 
 /* 
  * Just some maybe useful stuff for later
@@ -522,5 +598,9 @@ export default class Game {
  *
  * this.testSound = new Audio("./assets/test.wav");
  * this.testSound.play();
+ *
+ * //custom events
+ * const customEvent = new Event('myCustomEvent');
+ * document.dispatchEvent(customEvent);
  *
  */
