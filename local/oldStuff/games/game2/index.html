@@ -9,85 +9,11 @@
 
 		<title>FlappyBlocks</title>
 		<link rel="icon" type="image/png" href="FlappyBlocksIconV1.png">
-		<style>
-			body, html {
-				margin: 0;
-				padding: 0;
-				overflow: hidden; /* Hide scrollbars */
-			}
-			canvas {
-				display: block;
-				border: 1px solid black;
-			}
-			button {
-				background-color:#008010;
-				color:white;
-				font-size:20px;
-				padding: 15px 32px;
-				border-radius: 4px;
-				border: black 1px;
-				box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2);
-				border: solid 1px black;
-			}
-			button:hover {
-				color: #DDDDDD;
-				font-weight: bold;
-			}
-			.hint {
-				transform: rotate(90deg) translateX(50%);
-				position: absolute;
-				top: 50%;
-				right: 0;
-				transform-origin: top right;
-			}
-			.rightTop {
-				position: absolute;
-				top: 0;
-				right: 0;
-				background:grey;
-				padding: 20px;
-			}
-		</style>
 	</head>
 	<script>
 		window.location.href = "../../../games/FlappyBlocks";
 	</script>
 <body>
-<canvas id="myCanvas" width="400" height="400"></canvas>
-<button onclick="location.href = '../';" id="gamesButton" class="float-left submit-button">BACK</button>
-<p class="hint">mouseClick - wrap around
-</p>
-
-<div class="rightTop">
-<label>Score:</label>
-<label id="scoreLabel">0</label> <br>
-<label>Diff:</label>
-<select id="difficultySelect" style="width: 47px">
-	<option value="0">0</option>
-	<option value="1">1</option>
-	<option value="2" selected>2</option>
-	<option value="3">3</option>
-	<option value="4">4</option>
-</select> <br>
-<label>FPS:</label>
-<input type="number" value="60" min="10" step="10" id="fpsBox" style="width: 40px"/> <br>
-<label>Max:</label>
-<label id="maxScoreLabel">0</label> <br>
-
-</div>
-<script>
-	// @brief load external js
-	function loadScripts() {
-		const element = document.createElement("script");
-		element.src = "script.js";
-		document.body.appendChild(element);
-	}
-	loadScripts();
-
-	// only allow numbers
-	document.getElementById("fpsBox").addEventListener("input", function(event) {
-        this.value = this.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-    });
-</script>
+	<button onclick="location.href = '../';" id="gamesButton">BACK</button>
 </body>
 </html>

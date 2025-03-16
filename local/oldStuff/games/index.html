@@ -7,30 +7,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta name="author" content="egnrse">
 		<meta name="description" content="Game In My Page also called GIMP.">
-
-		<link rel="stylesheet" href="css/styles.css">
 	</head>
 	<script>
 		window.location.href = "../../games/DrawGame";
 	</script>
-	<body>
-		<canvas id="htmlCanvas" width="400" height="400"></canvas>
-		<div class="bellowGameBar">
-			<button onclick="location.href = '../';" id="gamesButton" class="backButton">BACK</button>
-
-			<div class="GameButtonGroup">
-				<button title="Want an empty canvas?" id="clearButton">CLEAR</button>
-				<button title="Save canvas to a file." id="saveButton">SAVE</button>
-				<button title="Load canvas from a file" id="loadButton">LOAD</button>
-			</div>
-		</div>
-
-		<input type="file" id="loadFileInput" accept=".json" style="display: none;">
-
-		<p class="hint">wasd/arrows and space are your friends</p>
-
-		<script src="scripts/main.js" type="module"></script>
-	</body>
 </html>
 
 <!--
