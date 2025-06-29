@@ -157,6 +157,13 @@ async function audioInit() {
 	//themeStart.play();
 }
 
+// @brief set loudness of music/sfx (from checkboxMusic)
+function checkboxMusicChanged(checkbox) {
+	let loudness = checkbox.checked ? 1 : 0;
+	musicGainNode.gain.setValueAtTime(loudness, audioCtx.currentTime);
+	sfxGainNode.gain.setValueAtTime(loudness, audioCtx.currentTime);
+}
+
 /// SETTINGS //////////
 
 

@@ -47,31 +47,50 @@
 				background:grey;
 				padding: 20px;
 			}
+			.bellowGame {
+
+				padding: 5px;
+			}
+			.rightBottom {
+				padding-left: 130px;
+			}
+			.backButton {
+				float: left;
+			}
+
 		</style>
 	</head>
 <body>
 <canvas id="myCanvas" width="400" height="400"></canvas>
-<button onclick="location.href = '../';" id="gamesButton" class="float-left submit-button">BACK</button>
+<div class="bellowGame">
+	<button onclick="location.href = '../';" id="gamesButton" class="backButton">BACK</button>
+	<div class="rightBottom">
+		<label for="checkboxMusic">Sound:</label>
+		<input type="checkbox" id="checkboxMusic" checked onchange="checkboxMusicChanged(this)"><br> 
+	</div>
+</div>
+
 <p class="hint">mouseClick - wrap around
 </p>
 
 <div class="rightTop">
-<label>Score:</label>
-<label id="scoreLabel">0</label> <br>
-<label>Diff:</label>
-<select id="difficultySelect" style="width: 47px">
-	<option value="0">0</option>
-	<option value="1">1</option>
-	<option value="2" selected>2</option>
-	<option value="3">3</option>
-	<option value="4">4</option>
-</select> <br>
-<label>FPS:</label>
-<input type="number" value="60" min="10" step="10" id="fpsBox" style="width: 40px"/> <br>
-<label>Max:</label>
-<label id="maxScoreLabel">0</label> <br>
-
+	<label>Score:</label>
+	<label id="scoreLabel">0</label> <br>
+	<label>Diff:</label>
+	<select id="difficultySelect" style="width: 47px">
+		<option value="0">0</option>
+		<option value="1">1</option>
+		<option value="2" selected>2</option>
+		<option value="3">3</option>
+		<option value="4">4</option>
+	</select> <br>
+	<label>FPS:</label>
+	<input type="number" value="60" min="10" step="10" id="fpsBox" style="width: 40px"/> <br>
+	<label>Max:</label>
+	<label id="maxScoreLabel">0</label> <br>
 </div>
+
+
 <script>
 	// @brief alert the user to too little width (to reasonably play the game)
 	function testWidth() {
@@ -79,7 +98,7 @@
 		if(width < 900) {
 			let mobile = "";
 			if(/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) mobile = "Try rotating the screen. ";
-			alert("The Window might have too little width. " + mobile + "(current width: " + width +")");
+			alert("The Window might have to little width. " + mobile + "(current width: " + width +")");
 		}
 	}
 	window.addEventListener("resize", testWidth);
