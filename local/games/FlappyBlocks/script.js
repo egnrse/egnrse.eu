@@ -155,6 +155,10 @@ async function audioInit() {
 	//themeStart.addEventListener('ended', () => {themeLoop.play(); console.log("playing Loop");});
 	//themeLoop.addEventListener('ended', () => {themeLoop.play();});
 	//themeStart.play();
+	
+	//set music loudness initially
+	const checkboxMusic = document.getElementById("checkboxMusic");
+	checkboxMusicChanged(checkboxMusic);
 }
 
 // @brief set loudness of music/sfx (from checkboxMusic)
