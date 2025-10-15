@@ -5,9 +5,13 @@
 // Network Settings > Automatic proxy configuration URL: https://www.egnrse.eu/proxy.pac
 
 function FindProxyForURL(url, host) {
-	// proxy .i2p domains through i2p
+	// .i2p > i2p
 	if (dnsDomainIs(host, ".i2p")) {
 		return "PROXY 127.0.0.1:4444";
+	}
+	// .onion > tor
+	if (dnsDomainIs(host, ".onion")) {
+		return "SOCKS5 127.0.0.1:9050";
 	}
 	// everything else connects directly
 	return "DIRECT";
